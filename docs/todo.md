@@ -6,22 +6,22 @@
 
 - [x] NSMC 데이터셋 다운로드
 - [x] train / test 분리
+
+---
+
+## 1. 전처리
+
+- [x] word_to_id 생성
+- [ ] corpus 생성
+- [ ] unknown token 처리 (OOV handling)
+- [ ] padding 구현 (fixed sequence length)
 - [ ] validation set 분리 (train에서 split)
 
 ---
 
-## 1. Baseline (기준 성능)
+## 2. Baseline (기준 성능)
 
 - [ ] Majority baseline 계산 및 평가 (accuracy)
-
----
-
-## 2. 전처리
-
-- [ ] word_to_id 생성
-- [ ] corpus 생성
-- [ ] unknown token 처리 (OOV handling)
-- [ ] padding 구현 (fixed sequence length)
 
 ---
 
@@ -35,6 +35,13 @@
 ---
 
 ## 4. 실험
+
+### 데이터 전처리 관련
+- [ ] word_to_id 모든 특수 문자를 처리하기 (@, ^, ~이나 .., ㅋㅋ, ㅠㅠ 등등)
+- [ ] word_to_id 최소 빈도 단어 처리
+- [ ] word_to_id character 단위
+- [ ] word_to_id 형태소 분석
+- [ ] word_to_id subword 방식
 
 - [ ] LSTM baseline 모델 학습
 - [ ] Dropout 추가 실험
