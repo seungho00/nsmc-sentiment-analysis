@@ -2,18 +2,23 @@
 
 ---
 
-## 0. 데이터
+## 0. 모델 설계
 
-- [x] NSMC 데이터셋 다운로드
-- [x] train / test 분리
+- [ ] 문제 정의
+- [ ] 모델 구조 설계
+- [ ] 계층별 tensor shape 설계
+- [ ] 하이퍼파라미터 설계
+- [ ] 실험 설계
 
 ---
 
 ## 1. 전처리
 
+- [x] NSMC 데이터셋 다운로드
+- [x] train / test 분리
 - [x] word_to_id 생성
-- [ ] corpus 생성
-- [ ] unknown token 처리 (OOV handling)
+- [x] corpus 생성
+- [x] unknown token 처리 (OOV handling)
 - [ ] padding 구현 (fixed sequence length)
 - [ ] validation set 분리 (train에서 split)
 
