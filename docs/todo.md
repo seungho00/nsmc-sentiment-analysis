@@ -17,7 +17,7 @@
 - [x] NSMC 데이터셋 다운로드
 - [x] train / test 분리
 - [x] word_to_id 생성
-- [ ] 희소 빈도 처리
+- [x] 희소 빈도 처리
 - [x] corpus 생성
 - [x] unknown token 처리 (OOV handling)
 - [ ] padding 구현 (fixed sequence length)

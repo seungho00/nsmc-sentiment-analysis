@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from pathlib import Path
+from collections import Counter
 
 BASE_DIR = Path(__file__).resolve().parent
 train_file_path = BASE_DIR / '../data/ratings_train.txt'
@@ -96,9 +97,18 @@ tokenized_documents_test = df_test["document"].str.split()
 
 ## word_to_id 생성 ##
 
+# 희소 단어 처리를 위한 단어 개수 세기
+word_count = Counter()
+
+for words in tokenized_documents_train:
+    word_count.update(words)
+print(word_count.most_common(10), end="\n\n")
+
 # 사전 정의, <UNK> 와 <PAD> 미리 입력
+min_freq = 3
 pad_id = 0
 unk_id = 1
+
 word_to_id = {
     "<PAD>" : pad_id,
     "<UNK>" : unk_id
@@ -109,12 +119,11 @@ id_to_word = {
 }
 
 # 구현
-for words in tokenized_documents_train:
-    for word in words:
-        if word not in word_to_id:
-            new_id = len(word_to_id)
-            word_to_id[word] = new_id
-            id_to_word[new_id] = word
+for word, count in word_count.items():
+    if count >= min_freq:
+        new_id = len(word_to_id)
+        word_to_id[word] = new_id
+        id_to_word[new_id] = word
 
 for i in range(min(15, len(id_to_word))):
     print(i,':', id_to_word[i])
@@ -125,7 +134,7 @@ print("")
 
 # train 데이터 corpus 생성
 corpus_train = [
-    [word_to_id[word] for word in words] for words in tokenized_documents_train
+    [word_to_id.get(word, unk_id) for word in words] for words in tokenized_documents_train
     ]
 # print(corpus_train[:5])
 
