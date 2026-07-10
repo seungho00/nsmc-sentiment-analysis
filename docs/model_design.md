@@ -3,22 +3,118 @@
 - 입력: 리뷰
 - 출력: 긍정/부정
 
+
 ## 모델
 
 Input
 ↓
 Embedding
 ↓
-LSTM
+Sequence Model1
 ↓
-Last Hidden State
+Sequence Model2
 ↓
-Linear
+Linear (Affine, input: Last Hidden State)
 ↓
-Softmax
+BCEWithLogitsLoss (Sigmoid, Binary Cross Entropy)
 
-Input Shape : (batch, seq_len)
-Embedding : (batch, seq_len, embed_dim)
-...
+### 파라미터
+참고: 『파이썬 딥러닝 머신러닝 입문』
+
+Loss: BCEWithLogitsLoss
+Optimizer: Adam (learning_rate = 0.001)
+
+batch_size = 32 (initial)
+seq_len = preprocessing 결과
+vocab_size = preprocessing 결과
+wordvec = 128 (initial)
+hidden_size = 64 (initial)
+
+Input Shape : (batch_size, seq_len)
+
+Embedding
+  Parameters : (vocab_size, wordvec)
+  Output    : (batch_size, seq_len, wordvec)
+
+Sequence Model1
+  Parameters : (input_size=wordvec, hidden_size)
+  Output    : (batch_size, seq_len, hidden_size)
+
+Sequence Model2
+  Parameters : (input_size=hidden_size, hidden_size)
+  Output    : (batch_size, seq_len, hidden_size)
+
+Linear
+  Parameters : (hidden_size, 1)
+  Output    : (batch_size, 1)
+
 
 ## 실험 계획
+
+### 1. 전처리 비교
+
+고정 조건
+- 모델: LSTM
+- 하이퍼파라미터: 초기값 사용
+- 희소 빈도 처리를 하는 경우 min_freq = 3
+
+평가 지표
+- Accuracy
+- Train Loss
+- Validation Loss
+- 학습 시간
+
+비교 대상
+1. 기본 전처리
+   - 문장 부호(.,!?)만 공백으로 분리
+2. 특수문자 전처리 개선
+   - 다양한 특수문자(@, ~, ; 등) 처리
+   - 연속 특수문자(.., ^^, ,, 등) 처리
+   - 반복 문자(ㅋㅋ, ㅎㅎ, ㅠㅠ 등) 처리
+3. Character-level Tokenization
+4. 형태소 분석
+5. Subword Tokenization
+
+---
+
+### 2. 모델 비교
+
+고정 조건
+- 전처리: 전처리 비교에서 가장 성능이 좋았던 방법 사용
+- 하이퍼파라미터: 초기값 사용
+- Dropout 미적용
+
+Baseline
+- Majority Baseline (Accuracy)
+
+평가 지표
+- Accuracy
+- Train Loss
+- Validation Loss
+- 학습 시간
+
+비교 대상
+1. RNN
+2. LSTM
+3. GRU
+4. Bi-LSTM
+5. BERT
+
+---
+
+### 3. Dropout 효과
+
+고정 조건
+- 전처리: 전처리 비교에서 가장 성능이 좋았던 방법 사용
+- 모델: 모델 비교에서 가장 성능이 좋았던 모델 사용
+- 하이퍼파라미터: 초기값 사용
+
+평가 지표
+- Accuracy
+- Train Loss
+- Validation Loss
+- 학습 시간
+
+비교 대상
+1. Dropout 미적용
+2. Dropout = 0.2

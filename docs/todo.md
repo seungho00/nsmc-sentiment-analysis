@@ -4,11 +4,11 @@
 
 ## 0. 모델 설계
 
-- [ ] 문제 정의
-- [ ] 모델 구조 설계
-- [ ] 계층별 tensor shape 설계
-- [ ] 하이퍼파라미터 설계
-- [ ] 실험 설계
+- [x] 문제 정의
+- [x] 모델 구조 설계
+- [x] 계층별 tensor shape 설계
+- [x] 하이퍼파라미터 설계
+- [x] 실험 설계
 
 ---
 
@@ -17,6 +17,7 @@
 - [x] NSMC 데이터셋 다운로드
 - [x] train / test 분리
 - [x] word_to_id 생성
+- [ ] 희소 빈도 처리
 - [x] corpus 생성
 - [x] unknown token 처리 (OOV handling)
 - [ ] padding 구현 (fixed sequence length)
@@ -43,7 +44,6 @@
 
 ### 데이터 전처리 관련
 - [ ] word_to_id 모든 특수 문자를 처리하기 (@, ^, ~이나 .., ㅋㅋ, ㅠㅠ 등등)
-- [ ] word_to_id 최소 빈도 단어 처리
 - [ ] word_to_id character 단위
 - [ ] word_to_id 형태소 분석
 - [ ] word_to_id subword 방식

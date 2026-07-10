@@ -124,16 +124,16 @@ print("")
 ## corpus 생성 ##
 
 # train 데이터 corpus 생성
-train_corpus = [
+corpus_train = [
     [word_to_id[word] for word in words] for words in tokenized_documents_train
     ]
-# print(train_corpus[:5])
+# print(corpus_train[:5])
 
 # test 데이터 corpus 생성
-test_corpus = [
+corpus_test = [
     [word_to_id.get(word, unk_id) for word in words] for words in tokenized_documents_test
     ]
-# print(test_corpus[:5])
+# print(corpus_test[:5])
 
 
 
@@ -171,7 +171,7 @@ print(coverage[(coverage > 0.33) & (coverage <= 0.9)])
 # Name: count, dtype: float64
 
 # 토큰 시퀀스 최대 길이 후보군
-candidates = [[5, 7, 12, 16, 20]]
+candidates = [5, 7, 12, 16, 20]
 
 # padding 실행
 
