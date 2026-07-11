@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 from collections import Counter
+from sklearn.model_selection import train_test_split
 
 BASE_DIR = Path(__file__).resolve().parent
 train_file_path = BASE_DIR / '../data/ratings_train.txt'
@@ -79,18 +80,27 @@ print("결측값의 수:", df_test["document"].isna().sum(), "\n")
 
 
 
-## 문자열 전처리 ##
+## 문자열 전처리 및 validation set 분리 ##
 
 # 특수 문자도 따로 처리 될 수 있도록 공백 추가
 df_train["document"] = df_train["document"].str.replace(
-    r"([.,!?])", r" \1 ", regex=True
+    r"([.,!?^~;])", r" \1 ", regex=True
 )
 df_test["document"] = df_test["document"].str.replace(
-    r"([.,!?])", r" \1 ", regex=True
+    r"([.,!?^~;])", r" \1 ", regex=True
+)
+
+# 검증 데이터 분리
+df_train, df_valid = train_test_split(
+    df_train,
+    test_size=0.1,
+    random_state=42,
+    stratify=df_train["label"]
 )
 
 # 문자열 토큰화
 tokenized_documents_train = df_train["document"].str.split()
+tokenized_documents_valid = df_valid["document"].str.split()
 tokenized_documents_test = df_test["document"].str.split()
 
 
@@ -130,6 +140,7 @@ for i in range(min(15, len(id_to_word))):
 print("")
 
 
+
 ## corpus 생성 ##
 
 # train 데이터 corpus 생성
@@ -137,6 +148,12 @@ corpus_train = [
     [word_to_id.get(word, unk_id) for word in words] for words in tokenized_documents_train
     ]
 # print(corpus_train[:5])
+
+# valid 데이터 corpus 생성
+corpus_valid = [
+    [word_to_id.get(word, unk_id) for word in words] for words in tokenized_documents_valid
+    ]
+# print(corpus_valid[:5])
 
 # test 데이터 corpus 생성
 corpus_test = [
@@ -166,7 +183,7 @@ print(length_counts.head(8), end="\n\n")  # 가장 많은 길이들
 # 각 길이별 커버리지 구하기 (각 길이에서 잘리지 않는 문서의 비율)
 length_counts = length_counts.sort_index()
 coverage = length_counts.cumsum() / length_counts.sum()
-print(coverage[(coverage > 0.33) & (coverage <= 0.9)])
+print(coverage[(coverage > 0.33) & (coverage <= 0.9)], end="\n\n")
 # document
 # 5     0.333291
 # ...
@@ -182,8 +199,29 @@ print(coverage[(coverage > 0.33) & (coverage <= 0.9)])
 # 토큰 시퀀스 최대 길이 후보군
 candidates = [5, 7, 12, 16, 20]
 
+
 # padding 실행
+sequence_maxlen = candidates[0]
 
+# train padding
+corpus_pad_train = np.zeros((len(corpus_train), sequence_maxlen), dtype=int)
 
+for i, corpus in enumerate(corpus_train):
+    length = min(len(corpus), sequence_maxlen)
+    corpus_pad_train[i, :length] = corpus[:length]
 
-## validation set 분리 ##
+# valid padding
+corpus_pad_valid = np.zeros((len(corpus_valid), sequence_maxlen), dtype=int)
+
+for i, corpus in enumerate(corpus_valid):
+    length = min(len(corpus), sequence_maxlen)
+    corpus_pad_valid[i, :length] = corpus[:length]
+
+# test padding
+corpus_pad_test = np.zeros((len(corpus_test), sequence_maxlen), dtype=int)
+
+for i, corpus in enumerate(corpus_test):
+    length = min(len(corpus), sequence_maxlen)
+    corpus_pad_test[i, :length] = corpus[:length]
+
+print(corpus_pad_train[0], corpus_pad_test[0], end="\n\n")

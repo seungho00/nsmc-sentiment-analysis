@@ -20,8 +20,8 @@
 - [x] 희소 빈도 처리
 - [x] corpus 생성
 - [x] unknown token 처리 (OOV handling)
-- [ ] padding 구현 (fixed sequence length)
-- [ ] validation set 분리 (train에서 split)
+- [x] padding 구현 (fixed sequence length)
+- [x] validation set 분리 (train에서 split)
 
 ---
 
