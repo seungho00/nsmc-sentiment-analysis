@@ -5,48 +5,73 @@
 
 
 ## 모델
-
-Input
-↓
-Embedding
-↓
-Sequence Model1
-↓
-Sequence Model2
-↓
-Linear (Affine, input: Last Hidden State)
-↓
+### 구조
+Input  
+↓  
+Embedding  
+↓  
+Sequence Model1  
+↓  
+Sequence Model2  
+↓  
+Linear (Affine, input: Last Hidden State)  
+↓  
 BCEWithLogitsLoss (Sigmoid, Binary Cross Entropy)
 
+---
+
 ### 파라미터
+
 참고: 『파이썬 딥러닝 머신러닝 입문』
 
-Loss: BCEWithLogitsLoss
-Optimizer: Adam (learning_rate = 0.001)
+| Parameter | Value |
+|---|---|
+| Loss | BCEWithLogitsLoss |
+| Optimizer | Adam |
+| Learning rate | 0.001 |
+| Batch size | 32 (initial) |
+| Sequence length | preprocessing 결과 |
+| Vocabulary size | preprocessing 결과 |
+| Word vector size | 128 (initial) |
+| Hidden size | 64 (initial) |
 
-batch_size = 32 (initial)
-seq_len = preprocessing 결과
-vocab_size = preprocessing 결과
-wordvec = 128 (initial)
-hidden_size = 64 (initial)
+**Input**
 
-Input Shape : (batch_size, seq_len)
+```
+Shape: (batch_size, seq_len)
+```
 
-Embedding
-  Parameters : (vocab_size, wordvec)
-  Output    : (batch_size, seq_len, wordvec)
+**Embedding**
 
-Sequence Model1
-  Parameters : (input_size=wordvec, hidden_size)
-  Output    : (batch_size, seq_len, hidden_size)
+```
+Parameters : (vocab_size, wordvec)
 
-Sequence Model2
-  Parameters : (input_size=hidden_size, hidden_size)
-  Output    : (batch_size, seq_len, hidden_size)
+Output     : (batch_size, seq_len, wordvec)
+```
 
-Linear
-  Parameters : (hidden_size, 1)
-  Output    : (batch_size, 1)
+**Sequence Model 1**
+
+```
+Parameters : (input_size=wordvec, hidden_size)
+
+Output     : (batch_size, seq_len, hidden_size)
+```
+
+**Sequence Model 2**
+
+```
+Parameters : (input_size=hidden_size, hidden_size)
+
+Output     : (batch_size, seq_len, hidden_size)
+```
+
+**Linear**
+
+```
+Parameters : (hidden_size, 1)
+
+Output     : (batch_size, 1)
+```
 
 
 ## 실험 계획
