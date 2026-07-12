@@ -28,7 +28,7 @@
 
 ## 2. Baseline (기준 성능)
 
-- [ ] Majority baseline 계산 및 평가 (accuracy)
+- [x] Majority baseline 계산 및 평가 (accuracy)
 
 ---
 
