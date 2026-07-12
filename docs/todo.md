@@ -22,6 +22,7 @@
 - [x] unknown token 처리 (OOV handling)
 - [x] padding 구현 (fixed sequence length)
 - [x] validation set 분리 (train에서 split)
+- [x] 전처리 결과 pickle 저장 및 불러오기 구현
 
 ---
 

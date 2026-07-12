@@ -3,10 +3,11 @@ import numpy as np
 from pathlib import Path
 from collections import Counter
 from sklearn.model_selection import train_test_split
+import pickle
 
 BASE_DIR = Path(__file__).resolve().parent
-train_file_path = BASE_DIR / '../data/ratings_train.txt'
-test_file_path = BASE_DIR / '../data/ratings_test.txt'
+train_file_path = BASE_DIR / '../data/raw/ratings_train.txt'
+test_file_path = BASE_DIR / '../data/raw/ratings_test.txt'
 
 
 # 데이터 불러오기
@@ -225,3 +226,54 @@ for i, corpus in enumerate(corpus_test):
     corpus_pad_test[i, :length] = corpus[:length]
 
 print(corpus_pad_train[0], corpus_pad_test[0], end="\n\n")
+
+
+
+## pickle 저장 ##
+
+SAVE_BASE_DIR = BASE_DIR / "../data/preprocessed"
+
+# label 저장
+save_name = "label_train.pkl"
+save_path = SAVE_BASE_DIR / save_name
+with open(save_path, "wb") as f:
+    pickle.dump(df_train["label"], f)
+
+save_name = "label_valid.pkl"
+save_path = SAVE_BASE_DIR / save_name
+with open(save_path, "wb") as f:
+    pickle.dump(df_valid["label"], f)
+
+save_name = "label_test.pkl"
+save_path = SAVE_BASE_DIR / save_name
+with open(save_path, "wb") as f:
+    pickle.dump(df_test["label"], f)
+
+
+# word_to_id, id_to_word 저장
+save_name = "word_to_id.pkl"
+save_path = SAVE_BASE_DIR / save_name
+with open(save_path, "wb") as f:
+    pickle.dump(word_to_id, f)
+
+save_name = "id_to_word.pkl"
+save_path = SAVE_BASE_DIR / save_name
+with open(save_path, "wb") as f:
+    pickle.dump(id_to_word, f)
+
+
+# corpus_pad 저장
+save_name = "corpus_pad_train.pkl"
+save_path = SAVE_BASE_DIR / save_name
+with open(save_path, "wb") as f:
+    pickle.dump(corpus_pad_train, f)
+
+save_name = "corpus_pad_valid.pkl"
+save_path = SAVE_BASE_DIR / save_name
+with open(save_path, "wb") as f:
+    pickle.dump(corpus_pad_valid, f)
+
+save_name = "corpus_pad_test.pkl"
+save_path = SAVE_BASE_DIR / save_name
+with open(save_path, "wb") as f:
+    pickle.dump(corpus_pad_test, f)
