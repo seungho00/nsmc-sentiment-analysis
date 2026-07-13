@@ -6,16 +6,16 @@
 
 ## 모델
 ### 구조
-Input  
-↓  
-Embedding  
-↓  
-Sequence Model1  
-↓  
-Sequence Model2  
-↓  
-Linear (Affine, input: Last Hidden State)  
-↓  
+Input<br>
+↓<br>
+Embedding<br>
+↓<br>
+Sequence Model1<br>
+↓<br>
+Sequence Model2<br>
+↓<br>
+Linear (Affine, input: Last Hidden State)<br>
+↓<br>
 BCEWithLogitsLoss (Sigmoid, Binary Cross Entropy)
 
 ---
@@ -32,7 +32,7 @@ BCEWithLogitsLoss (Sigmoid, Binary Cross Entropy)
 | Batch size | 32 (initial) |
 | Sequence length | preprocessing 결과 |
 | Vocabulary size | preprocessing 결과 |
-| Word vector size | 128 (initial) |
+| Embedding Dimension | 128 (initial) |
 | Hidden size | 64 (initial) |
 
 **Input**
@@ -44,15 +44,15 @@ Shape: (batch_size, seq_len)
 **Embedding**
 
 ```
-Parameters : (vocab_size, wordvec)
+Parameters : (vocab_size, embedding_dim)
 
-Output     : (batch_size, seq_len, wordvec)
+Output     : (batch_size, seq_len, embedding_dim)
 ```
 
 **Sequence Model 1**
 
 ```
-Parameters : (input_size=wordvec, hidden_size)
+Parameters : (input_size=embedding_dim, hidden_size)
 
 Output     : (batch_size, seq_len, hidden_size)
 ```

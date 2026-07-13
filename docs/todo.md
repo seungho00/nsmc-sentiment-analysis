@@ -34,26 +34,29 @@
 
 ## 3. 모델 구현
 
-- [ ] Embedding layer 구현
-- [ ] LSTM 모델 구현
-- [ ] 학습 루프 작성 (train / eval 분리)
-- [ ] 모델 저장 및 로드 기능 구현
+- [x] Embedding layer 구현
+- [x] LSTM 모델 구현
+- [x] 학습 루프 작성 (train / eval 분리)
+- [x] 모델 저장 및 로드 기능 구현
 
 ---
 
 ## 4. 실험
 
-### 데이터 전처리 관련
-- [ ] word_to_id 모든 특수 문자를 처리하기 (@, ^, ~이나 .., ㅋㅋ, ㅠㅠ 등등)
-- [ ] word_to_id character 단위
-- [ ] word_to_id 형태소 분석
-- [ ] word_to_id subword 방식
+### 실험 1
+- [ ] 감성 표현 전처리
+- [ ] Character-level Tokenization
+- [ ] 형태소 분석
+- [ ] subword Tokenization
 
-- [ ] LSTM baseline 모델 학습
-- [ ] Dropout 추가 실험
+### 실험 2
+- [ ] RNN 모델 구현 및 실험
 - [ ] GRU 모델 구현 및 실험
 - [ ] Bi-LSTM 모델 구현 및 실험
 - [ ] BERT 모델과 성능 비교
+
+### 실험 3
+- [ ] Dropout 구현 및 실험
 
 ---
 
