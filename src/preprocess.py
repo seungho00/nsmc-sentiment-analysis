@@ -181,7 +181,7 @@ print(length_counts.head(8), end="\n\n")  # 가장 많은 길이들
 # mode_value = length_counts.idxmax()  # 가장 큰 value의 index를 반환
 # print("mode:", mode_value)
 
-# 각 길이별 커버리지 구하기 (각 길이에서 잘리지 않는 문서의 비율)
+# 각 길이별 커버리지 구하기 (각 길이에서 잘리지 않는 문장의 비율)
 length_counts = length_counts.sort_index()
 coverage = length_counts.cumsum() / length_counts.sum()
 print(coverage[(coverage > 0.33) & (coverage <= 0.9)], end="\n\n")
@@ -202,7 +202,7 @@ candidates = [5, 7, 12, 16, 20]
 
 
 # padding 실행
-sequence_maxlen = candidates[0]
+sequence_maxlen = candidates[4]
 
 # train padding
 corpus_pad_train = np.zeros((len(corpus_train), sequence_maxlen), dtype=int)

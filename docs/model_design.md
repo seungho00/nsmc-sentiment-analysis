@@ -1,3 +1,5 @@
+# Model Design
+
 ## 문제 정의
 - NSMC 감성분석
 - 입력: 리뷰
@@ -32,7 +34,7 @@ BCEWithLogitsLoss (Sigmoid, Binary Cross Entropy)
 | Batch size | 32 (initial) |
 | Sequence length | preprocessing 결과 |
 | Vocabulary size | preprocessing 결과 |
-| Embedding Dimension | 128 (initial) |
+| Embedding dimension | 128 (initial) |
 | Hidden size | 64 (initial) |
 
 **Input**
@@ -91,7 +93,7 @@ Output     : (batch_size, 1)
 
 비교 대상
 1. 기본 전처리
-   - 문장 부호(.,!?^~;)를 공백으로 분리
+   - 특수문자(.,!?^~;)를 공백으로 분리
 2. 감성 표현 전처리
    - 연속 특수문자(.., ^^, ;;, ,,) 처리
    - 반복 자모(ㅋ, ㅎ, ㅠ, ㅜ) 처리

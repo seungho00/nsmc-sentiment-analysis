@@ -6,6 +6,14 @@ from pathlib import Path
 
 import models
 import dataset as my_dataset
+from config import (
+    MODEL_TYPE,
+    EMBEDDING_DIM,
+    HIDDEN_SIZE,
+    LEARNING_RATE,
+    BATCH_SIZE,
+    EPOCHS
+    )
 
 
 
@@ -43,7 +51,7 @@ dataset_train = MovieDataset(x_train, y_train)
 
 loader_train = DataLoader(
     dataset_train,
-    batch_size=32,
+    batch_size=BATCH_SIZE,
     shuffle=True
 )
 
@@ -51,29 +59,19 @@ dataset_valid = MovieDataset(x_valid, y_valid)
 
 loader_valid = DataLoader(
     dataset_valid,
-    batch_size=32,
+    batch_size=BATCH_SIZE,
     shuffle=True
 )
 
 
 
-## 하이퍼파라미터 설정 ##
-vocab_size = len(word_to_id)
-embedding_dim = 128
-hidden_size = 64
-learning_rate = 0.001
-
-
-
 ## 모델 생성 ##
 
-model_type = "LSTM"
-
-if model_type == "LSTM":
+if MODEL_TYPE == "LSTM":
     model = models.lstm.SentimentLSTM(
-        vocab_size=vocab_size,
-        embedding_dim=embedding_dim,
-        hidden_size=hidden_size
+        vocab_size=len(word_to_id),
+        embedding_dim=EMBEDDING_DIM,
+        hidden_size=HIDDEN_SIZE
     )
 
 
@@ -91,19 +89,21 @@ model = model.to(device)
 
 
 
+import time
+import datetime
+start = time.time()
+
 ## 학습 진행 ##
 
 # 체크포인트 저장 위치
 SAVE_DIR = Path(__file__).resolve().parent / "checkpoints"
-save_path = SAVE_DIR / f"best_{model_type}.pt"
+save_path = SAVE_DIR / f"best_{MODEL_TYPE}.pt"
 
 # 손실 함수, 옵티마이저 지정
 criterion = nn.BCEWithLogitsLoss()
-optimizer = Adam(model.parameters(), lr=learning_rate)
+optimizer = Adam(model.parameters(), lr=LEARNING_RATE)
 
-epochs = 10
-
-for epoch in range(epochs):
+for epoch in range(EPOCHS):
 
     # train
     model.train()
@@ -157,7 +157,7 @@ for epoch in range(epochs):
 
 
     print(
-        f"Epoch {epoch+1}/{epochs} | "
+        f"Epoch {epoch+1}/{EPOCHS} | "
         f"Train Loss: {total_loss / len(loader_train):.4f} | "
         f"Valid Loss: {total_loss_valid / len(loader_valid):.4f}"
     )
@@ -171,3 +171,6 @@ for epoch in range(epochs):
             model.state_dict(),
             save_path
         )
+
+end = time.time()
+print(f"\n\n{datetime.timedelta(seconds=(end-start))}")

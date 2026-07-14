@@ -4,7 +4,12 @@ from pathlib import Path
 
 import models
 import dataset as my_dataset
-
+from config import (
+    MODEL_TYPE,
+    EMBEDDING_DIM,
+    HIDDEN_SIZE,
+    BATCH_SIZE,
+    )
 
 
 ## 데이터 로드 ##
@@ -35,7 +40,7 @@ dataset_test = MovieDataset(x_test, y_test)
 
 loader_test = DataLoader(
     dataset_test,
-    batch_size=32,
+    batch_size=BATCH_SIZE,
     shuffle=False
 )
 
@@ -53,28 +58,18 @@ print(f"Using device: {device}")
 
 
 
-## 하이퍼파라미터 설정 ##
-vocab_size = len(word_to_id)
-embedding_dim = 128
-hidden_size = 64
-learning_rate = 0.001
-
-
-
 ## 모델 생성 ##
 
-model_type = "LSTM"
-
-if model_type == "LSTM":
+if MODEL_TYPE == "LSTM":
     model = models.lstm.SentimentLSTM(
-        vocab_size=vocab_size,
-        embedding_dim=embedding_dim,
-        hidden_size=hidden_size
+        vocab_size=len(word_to_id),
+        embedding_dim=EMBEDDING_DIM,
+        hidden_size=HIDDEN_SIZE
     )
 
 # 체크포인트 로드 위치
 LOAD_DIR = Path(__file__).resolve().parent / "checkpoints"
-load_path = LOAD_DIR / f"best_{model_type}.pt"
+load_path = LOAD_DIR / f"best_{MODEL_TYPE}.pt"
 
 # checkpoint 로드
 model.load_state_dict(
