@@ -1,0 +1,264 @@
+import pandas as pd
+import numpy as np
+from pathlib import Path
+from collections import Counter
+from sklearn.model_selection import train_test_split
+import pickle
+
+BASE_DIR = Path(__file__).resolve().parent
+train_file_path = BASE_DIR / '../data/raw/ratings_train.txt'
+test_file_path = BASE_DIR / '../data/raw/ratings_test.txt'
+
+
+# 데이터 불러오기
+try:
+    df_train = pd.read_csv(train_file_path, sep='\t') # 탭으로 구분된 파일임을 명시
+    print('train 데이터 로드 성공')
+    # print(df_train.head())
+except FileNotFoundError:
+    print(f"오류: {train_file_path} 경로에서 파일을 찾을 수 없습니다. 파일 경로가 올바른지 확인해주세요.")
+    exit()
+except Exception as e:
+    print(f"데이터 로드 중 오류 발생: {e}")
+    raise  # 예외를 다시 발생시키는 명령어, 호출한 쪽에서 예외를 받아 다른 처리를 할 수도 있다
+
+try:
+    df_test = pd.read_csv(test_file_path, sep='\t') # 탭으로 구분된 파일임을 명시
+    print('test 데이터 로드 성공')
+    # print(df_test.head())
+except FileNotFoundError:
+    print(f"오류: {test_file_path} 경로에서 파일을 찾을 수 없습니다. 파일 경로가 올바른지 확인해주세요.")
+    exit()
+except Exception as e:
+    print(f"데이터 로드 중 오류 발생: {e}")
+    raise  # 예외를 다시 발생시키는 명령어, 호출한 쪽에서 예외를 받아 다른 처리를 할 수도 있다
+
+
+
+## 결측값 제거 ##
+
+# 결측값 개수
+print("\ntrain 데이터의 결측값의 수:", df_train["document"].isna().sum())
+print("test 데이터의 결측값의 수:", df_test["document"].isna().sum())
+
+# # 결측값 출력
+# print("\ntrain 데이터의 결측값 목록")
+# print(df_train[df_train["document"].isna()])
+
+# print("\ntest 데이터의 결측값 목록")
+# print(df_test[df_test["document"].isna()])
+
+# 빈 문자열 확인
+print("\ntrain 데이터의 빈 문자열 목록")
+print(df_train[df_train["document"] == ""])
+
+print("\ntest 데이터의 빈 문자열 목록")
+print(df_test[df_test["document"] == ""])
+
+# 공백만 있는 문자열 확인
+print("\ntrain 데이터의 공백만 있는 문자열 목록")
+print(df_train[df_train["document"].str.strip() == ""])
+
+print("\ntest 데이터의 공백만 있는 문자열 목록")
+print(df_test[df_test["document"].str.strip() == ""])
+
+# 결측값 제거
+print("\ntrain 데이터의 결측값 삭제")
+print("삭제 전:", len(df_train))
+
+df_train = df_train.dropna(subset=["document"])
+
+print("삭제 후:", len(df_train))
+print("결측값의 수:", df_train["document"].isna().sum())
+
+print("\ntest 데이터의 결측값 삭제")
+print("삭제 전:", len(df_test))
+
+df_test = df_test.dropna(subset=["document"])
+
+print("삭제 후:", len(df_test))
+print("결측값의 수:", df_test["document"].isna().sum(), "\n")
+
+
+
+## 문자열 전처리 및 validation set 분리 ##
+
+# 특수 문자도 따로 처리 될 수 있도록 공백 추가
+df_train["document"] = df_train["document"].str.replace(
+    r"([.,!?^~;])", r" \1 ", regex=True
+)
+df_test["document"] = df_test["document"].str.replace(
+    r"([.,!?^~;])", r" \1 ", regex=True
+)
+
+# 검증 데이터 분리
+df_train, df_valid = train_test_split(
+    df_train,
+    test_size=0.1,
+    random_state=42,
+    stratify=df_train["label"]
+)
+
+# 문자열 토큰화
+tokenized_documents_train = df_train["document"].str.split()
+tokenized_documents_valid = df_valid["document"].str.split()
+tokenized_documents_test = df_test["document"].str.split()
+
+
+
+## word_to_id 생성 ##
+
+# 희소 단어 처리를 위한 단어 개수 세기
+word_count = Counter()
+
+for words in tokenized_documents_train:
+    word_count.update(words)
+print(word_count.most_common(10), end="\n\n")
+
+# 사전 정의, <UNK> 와 <PAD> 미리 입력
+min_freq = 3
+pad_id = 0
+unk_id = 1
+
+word_to_id = {
+    "<PAD>" : pad_id,
+    "<UNK>" : unk_id
+}
+id_to_word = {
+    pad_id : "<PAD>",
+    unk_id : "<UNK>"
+}
+
+# 구현
+for word, count in word_count.items():
+    if count >= min_freq:
+        new_id = len(word_to_id)
+        word_to_id[word] = new_id
+        id_to_word[new_id] = word
+
+for i in range(min(15, len(id_to_word))):
+    print(i,':', id_to_word[i])
+print("")
+
+
+
+## corpus 생성 ##
+
+# train 데이터 corpus 생성
+corpus_train = [
+    [word_to_id.get(word, unk_id) for word in words] for words in tokenized_documents_train
+    ]
+# print(corpus_train[:5])
+
+# valid 데이터 corpus 생성
+corpus_valid = [
+    [word_to_id.get(word, unk_id) for word in words] for words in tokenized_documents_valid
+    ]
+# print(corpus_valid[:5])
+
+# test 데이터 corpus 생성
+corpus_test = [
+    [word_to_id.get(word, unk_id) for word in words] for words in tokenized_documents_test
+    ]
+# print(corpus_test[:5])
+
+
+
+## padding ##
+
+# 토큰 시퀀스 최대 길이를 구하기 위한 최빈값 탐색
+length_counts = tokenized_documents_train.apply(len).value_counts()
+
+print(length_counts.head(8), end="\n\n")  # 가장 많은 길이들
+# document
+# 5     12598
+# 6     12565
+# ...
+# 9      8907
+# 10     7986
+# Name: count, dtype: int64
+
+# mode_value = length_counts.idxmax()  # 가장 큰 value의 index를 반환
+# print("mode:", mode_value)
+
+# 각 길이별 커버리지 구하기 (각 길이에서 잘리지 않는 문장의 비율)
+length_counts = length_counts.sort_index()
+coverage = length_counts.cumsum() / length_counts.sum()
+print(coverage[(coverage > 0.33) & (coverage <= 0.91)], end="\n\n")
+# document
+# 5     0.333291
+# ...
+# 7     0.491830
+# ...
+# 12    0.757219
+# ...
+# 16    0.853002
+# ...
+# 20    0.898610
+# Name: count, dtype: float64
+
+# 토큰 시퀀스 최대 길이 후보군
+candidates = [5, 7, 12, 16, 21]
+
+
+# padding 실행
+sequence_maxlen = candidates[3]
+
+# train padding
+corpus_pad_train = np.zeros((len(corpus_train), sequence_maxlen), dtype=int)
+
+for i, corpus in enumerate(corpus_train):
+    length = min(len(corpus), sequence_maxlen)
+    corpus_pad_train[i, :length] = corpus[:length]
+
+# valid padding
+corpus_pad_valid = np.zeros((len(corpus_valid), sequence_maxlen), dtype=int)
+
+for i, corpus in enumerate(corpus_valid):
+    length = min(len(corpus), sequence_maxlen)
+    corpus_pad_valid[i, :length] = corpus[:length]
+
+# test padding
+corpus_pad_test = np.zeros((len(corpus_test), sequence_maxlen), dtype=int)
+
+for i, corpus in enumerate(corpus_test):
+    length = min(len(corpus), sequence_maxlen)
+    corpus_pad_test[i, :length] = corpus[:length]
+
+print(corpus_pad_train[0], corpus_pad_test[0], end="\n\n")
+
+
+
+## pickle 저장 ##
+
+# 저장 위치
+SAVE_BASE_DIR = BASE_DIR / "../data/preprocessed"
+
+# label 저장
+datasets = [(df_train, "train"), (df_valid, "valid"), (df_test, "test")]
+for data, name in datasets:
+    save_path = SAVE_BASE_DIR / f"label_{name}.pkl"
+    with open(save_path, "wb") as f:
+        pickle.dump(data["label"].to_numpy(), f)
+
+
+# word_to_id, id_to_word 저장
+save_name = "word_to_id.pkl"
+save_path = SAVE_BASE_DIR / save_name
+with open(save_path, "wb") as f:
+    pickle.dump(word_to_id, f)
+
+save_name = "id_to_word.pkl"
+save_path = SAVE_BASE_DIR / save_name
+with open(save_path, "wb") as f:
+    pickle.dump(id_to_word, f)
+
+
+# corpus_pad 저장
+datasets = [(corpus_pad_train, "train"),
+            (corpus_pad_valid, "valid"),
+            (corpus_pad_test, "test")]
+for data, name in datasets:
+    save_path = SAVE_BASE_DIR / f"corpus_pad_{name}.pkl"
+    with open(save_path, "wb") as f:
+        pickle.dump(data, f)

@@ -60,19 +60,23 @@ dataset_valid = MovieDataset(x_valid, y_valid)
 loader_valid = DataLoader(
     dataset_valid,
     batch_size=BATCH_SIZE,
-    shuffle=True
+    shuffle=False
 )
 
 
 
 ## 모델 생성 ##
 
-if MODEL_TYPE == "LSTM":
-    model = models.lstm.SentimentLSTM(
-        vocab_size=len(word_to_id),
-        embedding_dim=EMBEDDING_DIM,
-        hidden_size=HIDDEN_SIZE
-    )
+MODEL_TYPES = {
+    "LSTM": models.lstm.SentimentLSTM
+}
+model_constructor = MODEL_TYPES[MODEL_TYPE]
+
+model = model_constructor(
+    vocab_size=len(word_to_id),
+    embedding_dim=EMBEDDING_DIM,
+    hidden_size=HIDDEN_SIZE
+)
 
 
 # 계산 장치 지정
@@ -83,15 +87,11 @@ elif torch.backends.mps.is_available():
 else:
     device = torch.device("cpu")
 
-print(f"Using device: {device}")
-
 model = model.to(device)
 
+print(f"Using device: {device}")
 
 
-import time
-import datetime
-start = time.time()
 
 ## 학습 진행 ##
 
@@ -171,6 +171,3 @@ for epoch in range(EPOCHS):
             model.state_dict(),
             save_path
         )
-
-end = time.time()
-print(f"\n\n{datetime.timedelta(seconds=(end-start))}")

@@ -5,6 +5,14 @@ from collections import Counter
 from sklearn.model_selection import train_test_split
 import pickle
 
+from config import TOKENIZER
+from tokenizer_modules import (
+    basic,
+    sentiment,
+    character_level,
+    morpheme
+)
+
 BASE_DIR = Path(__file__).resolve().parent
 train_file_path = BASE_DIR / '../data/raw/ratings_train.txt'
 test_file_path = BASE_DIR / '../data/raw/ratings_test.txt'
@@ -14,7 +22,6 @@ test_file_path = BASE_DIR / '../data/raw/ratings_test.txt'
 try:
     df_train = pd.read_csv(train_file_path, sep='\t') # 탭으로 구분된 파일임을 명시
     print('train 데이터 로드 성공')
-    # print(df_train.head())
 except FileNotFoundError:
     print(f"오류: {train_file_path} 경로에서 파일을 찾을 수 없습니다. 파일 경로가 올바른지 확인해주세요.")
     exit()
@@ -25,7 +32,6 @@ except Exception as e:
 try:
     df_test = pd.read_csv(test_file_path, sep='\t') # 탭으로 구분된 파일임을 명시
     print('test 데이터 로드 성공')
-    # print(df_test.head())
 except FileNotFoundError:
     print(f"오류: {test_file_path} 경로에서 파일을 찾을 수 없습니다. 파일 경로가 올바른지 확인해주세요.")
     exit()
@@ -35,63 +41,30 @@ except Exception as e:
 
 
 
-## 결측값 제거 ##
+## 데이터 정제 ##
 
-# 결측값 개수
-print("\ntrain 데이터의 결측값의 수:", df_train["document"].isna().sum())
-print("test 데이터의 결측값의 수:", df_test["document"].isna().sum())
+def remove_rows(df, mask, name, target):
+    if mask.any():
+        data_cnt = mask.sum()
+        df = df[~mask]
+        print(f"\n{name} 데이터의 {target} {data_cnt}개 제거 완료")
 
-# # 결측값 출력
-# print("\ntrain 데이터의 결측값 목록")
-# print(df_train[df_train["document"].isna()])
+    return df
 
-# print("\ntest 데이터의 결측값 목록")
-# print(df_test[df_test["document"].isna()])
+def clean_data(df, name):
+    df = remove_rows(df, df["document"].isna(), name, "결측값")
+    df = remove_rows(df, df["document"] == "", name, "빈 문자열")
+    df = remove_rows(df, df["document"].str.strip() == "", name, "공백만 있는 문자열")
 
-# 빈 문자열 확인
-print("\ntrain 데이터의 빈 문자열 목록")
-print(df_train[df_train["document"] == ""])
+    return df
 
-print("\ntest 데이터의 빈 문자열 목록")
-print(df_test[df_test["document"] == ""])
-
-# 공백만 있는 문자열 확인
-print("\ntrain 데이터의 공백만 있는 문자열 목록")
-print(df_train[df_train["document"].str.strip() == ""])
-
-print("\ntest 데이터의 공백만 있는 문자열 목록")
-print(df_test[df_test["document"].str.strip() == ""])
-
-# 결측값 제거
-print("\ntrain 데이터의 결측값 삭제")
-print("삭제 전:", len(df_train))
-
-df_train = df_train.dropna(subset=["document"])
-
-print("삭제 후:", len(df_train))
-print("결측값의 수:", df_train["document"].isna().sum())
-
-print("\ntest 데이터의 결측값 삭제")
-print("삭제 전:", len(df_test))
-
-df_test = df_test.dropna(subset=["document"])
-
-print("삭제 후:", len(df_test))
-print("결측값의 수:", df_test["document"].isna().sum(), "\n")
+df_train = clean_data(df_train, "train")
+df_test = clean_data(df_test, "test")
 
 
 
-## 문자열 전처리 및 validation set 분리 ##
+## validation set 분리 ##
 
-# 특수 문자도 따로 처리 될 수 있도록 공백 추가
-df_train["document"] = df_train["document"].str.replace(
-    r"([.,!?^~;])", r" \1 ", regex=True
-)
-df_test["document"] = df_test["document"].str.replace(
-    r"([.,!?^~;])", r" \1 ", regex=True
-)
-
-# 검증 데이터 분리
 df_train, df_valid = train_test_split(
     df_train,
     test_size=0.1,
@@ -99,10 +72,21 @@ df_train, df_valid = train_test_split(
     stratify=df_train["label"]
 )
 
-# 문자열 토큰화
-tokenized_documents_train = df_train["document"].str.split()
-tokenized_documents_valid = df_valid["document"].str.split()
-tokenized_documents_test = df_test["document"].str.split()
+
+
+## 문자열 토큰화
+
+TOKENIZERS = {
+    "basic": basic.basic_tokenizer,
+    "sentiment": sentiment.sentiment_tokenizer,
+    "character_level": character_level.character_level_tokenizer,
+    "morpheme": morpheme.morpheme_tokenizer
+}
+tokenizer = TOKENIZERS[TOKENIZER]
+
+tokenized_documents_train = tokenizer(df_train, "document")
+tokenized_documents_valid = tokenizer(df_valid, "document")
+tokenized_documents_test = tokenizer(df_test, "document")
 
 
 
@@ -113,7 +97,7 @@ word_count = Counter()
 
 for words in tokenized_documents_train:
     word_count.update(words)
-print(word_count.most_common(10), end="\n\n")
+
 
 # 사전 정의, <UNK> 와 <PAD> 미리 입력
 min_freq = 3
@@ -136,10 +120,6 @@ for word, count in word_count.items():
         word_to_id[word] = new_id
         id_to_word[new_id] = word
 
-for i in range(min(15, len(id_to_word))):
-    print(i,':', id_to_word[i])
-print("")
-
 
 
 ## corpus 생성 ##
@@ -148,19 +128,16 @@ print("")
 corpus_train = [
     [word_to_id.get(word, unk_id) for word in words] for words in tokenized_documents_train
     ]
-# print(corpus_train[:5])
 
 # valid 데이터 corpus 생성
 corpus_valid = [
     [word_to_id.get(word, unk_id) for word in words] for words in tokenized_documents_valid
     ]
-# print(corpus_valid[:5])
 
 # test 데이터 corpus 생성
 corpus_test = [
     [word_to_id.get(word, unk_id) for word in words] for words in tokenized_documents_test
     ]
-# print(corpus_test[:5])
 
 
 
@@ -169,63 +146,33 @@ corpus_test = [
 # 토큰 시퀀스 최대 길이를 구하기 위한 최빈값 탐색
 length_counts = tokenized_documents_train.apply(len).value_counts()
 
-print(length_counts.head(8), end="\n\n")  # 가장 많은 길이들
-# document
-# 5     12598
-# 6     12565
-# ...
-# 9      8907
-# 10     7986
-# Name: count, dtype: int64
-
-# mode_value = length_counts.idxmax()  # 가장 큰 value의 index를 반환
-# print("mode:", mode_value)
-
-# 각 길이별 커버리지 구하기 (각 길이에서 잘리지 않는 문장의 비율)
+# max_length 구하기
 length_counts = length_counts.sort_index()
 coverage = length_counts.cumsum() / length_counts.sum()
-print(coverage[(coverage > 0.33) & (coverage <= 0.9)], end="\n\n")
-# document
-# 5     0.333291
-# ...
-# 7     0.491830
-# ...
-# 12    0.757219
-# ...
-# 16    0.853002
-# ...
-# 20    0.898610
-# Name: count, dtype: float64
-
-# 토큰 시퀀스 최대 길이 후보군
-candidates = [5, 7, 12, 16, 20]
+sequence_maxlen = coverage[coverage >= 0.9].index[0]
+print("\nmax_length:",sequence_maxlen)
 
 
-# padding 실행
-sequence_maxlen = candidates[4]
-
-# train padding
+# train padding 실행
 corpus_pad_train = np.zeros((len(corpus_train), sequence_maxlen), dtype=int)
 
 for i, corpus in enumerate(corpus_train):
     length = min(len(corpus), sequence_maxlen)
     corpus_pad_train[i, :length] = corpus[:length]
 
-# valid padding
+# valid padding 실행
 corpus_pad_valid = np.zeros((len(corpus_valid), sequence_maxlen), dtype=int)
 
 for i, corpus in enumerate(corpus_valid):
     length = min(len(corpus), sequence_maxlen)
     corpus_pad_valid[i, :length] = corpus[:length]
 
-# test padding
+# test padding 실행
 corpus_pad_test = np.zeros((len(corpus_test), sequence_maxlen), dtype=int)
 
 for i, corpus in enumerate(corpus_test):
     length = min(len(corpus), sequence_maxlen)
     corpus_pad_test[i, :length] = corpus[:length]
-
-print(corpus_pad_train[0], corpus_pad_test[0], end="\n\n")
 
 
 
