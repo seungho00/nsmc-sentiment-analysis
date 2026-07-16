@@ -184,6 +184,7 @@ if __name__ == "__main__":
 
         # word_to_id 생성
         word_to_id, id_to_word = make_word_to_id(tokenized_documents_train)
+        print("\nvocab_size:", len(word_to_id))
 
         # corpus 생성
         corpus_train = make_corpus(tokenized_documents_train, word_to_id)
@@ -200,6 +201,8 @@ if __name__ == "__main__":
         corpus_train = make_sp_corpus(sp, df_train)
         corpus_valid = make_sp_corpus(sp, df_valid)
         corpus_test = make_sp_corpus(sp, df_test)
+
+        print("\nvocab_size:", sp.get_piece_size())
 
 
 
