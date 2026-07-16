@@ -1,4 +1,4 @@
-def sentiment_tokenizer(df, column):
+def sentiment_tokenizer(df, column="document"):
     
     # 감정 표현 정규화
     normalize_patterns = {

@@ -14,7 +14,7 @@ Name: proportion, dtype: float64
 '''
 
 accuracy_valid = (y_valid == majority_label).mean()
-print(f"{accuracy_valid:.2%}")  # 50.11%
+print(f"Validation accuracy: {accuracy_valid:.2%}")  # 50.11%
 
 accuracy_test = (y_test == majority_label).mean()
-print(f"{accuracy_test:.2%}")  # 49.65%
+print(f"Test accuracy: {accuracy_test:.2%}")  # 49.65%

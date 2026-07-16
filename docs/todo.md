@@ -52,10 +52,10 @@
 ## 4. 실험
 
 ### 실험 1
-- [ ] 감성 표현 전처리
-- [ ] Character-level Tokenization
-- [ ] 형태소 분석
-- [ ] subword Tokenization
+- [x] 감성 표현 전처리
+- [x] Character-level Tokenization
+- [x] 형태소 분석
+- [x] subword Tokenization
 
 ### 실험 2
 - [ ] RNN 모델 구현 및 실험

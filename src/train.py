@@ -20,7 +20,7 @@ from config import (
 ## 데이터 불러오기 ##
 
 (x_train, y_train), (x_valid, y_valid), _ = my_dataset.load_data()
-word_to_id, _ = my_dataset.load_vocab()
+vocab_size = my_dataset.load_vocab_size()
 
 # numpy에서 torch.tensor 타입으로 변환
 x_train = torch.tensor(x_train)
@@ -73,7 +73,7 @@ MODEL_TYPES = {
 model_constructor = MODEL_TYPES[MODEL_TYPE]
 
 model = model_constructor(
-    vocab_size=len(word_to_id),
+    vocab_size=vocab_size,
     embedding_dim=EMBEDDING_DIM,
     hidden_size=HIDDEN_SIZE
 )
@@ -96,7 +96,7 @@ print(f"Using device: {device}")
 ## 학습 진행 ##
 
 # 체크포인트 저장 위치
-SAVE_DIR = Path(__file__).resolve().parent / "checkpoints"
+SAVE_DIR = Path(__file__).resolve().parent.parent / "checkpoints"
 save_path = SAVE_DIR / f"best_{MODEL_TYPE}.pt"
 
 # 손실 함수, 옵티마이저 지정

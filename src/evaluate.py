@@ -14,7 +14,7 @@ from config import (
 
 ## 데이터 로드 ##
 _, _, (x_test, y_test) = my_dataset.load_data()
-word_to_id, id_to_word = my_dataset.load_vocab()
+vocab_size = my_dataset.load_vocab_size()
 
 # 데이터 타입 변환
 x_test = torch.tensor(x_test)
@@ -62,13 +62,13 @@ print(f"Using device: {device}")
 
 if MODEL_TYPE == "LSTM":
     model = models.lstm.SentimentLSTM(
-        vocab_size=len(word_to_id),
+        vocab_size=vocab_size,
         embedding_dim=EMBEDDING_DIM,
         hidden_size=HIDDEN_SIZE
     )
 
 # 체크포인트 로드 위치
-LOAD_DIR = Path(__file__).resolve().parent / "checkpoints"
+LOAD_DIR = Path(__file__).resolve().parent.parent / "checkpoints"
 load_path = LOAD_DIR / f"best_{MODEL_TYPE}.pt"
 
 # checkpoint 로드
