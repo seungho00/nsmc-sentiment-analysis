@@ -1,1 +1,4 @@
-from . import lstm
+from . import (
+    lstm,
+    rnn
+)

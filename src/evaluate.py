@@ -6,6 +6,7 @@ import models
 import dataset as my_dataset
 from config import (
     MODEL_TYPE,
+    DEVICE,
     EMBEDDING_DIM,
     HIDDEN_SIZE,
     BATCH_SIZE,
@@ -46,10 +47,12 @@ loader_test = DataLoader(
 
 
 
-## 계산 장치 지정 ##
-if torch.cuda.is_available():
+# 계산 장치 지정
+if DEVICE is not None:
+    device = torch.device(DEVICE)
+elif torch.cuda.is_available():
     device = torch.device("cuda")
-elif torch.backends.mps.is_available():
+elif torch.backends.mps.is_available() and MODEL_TYPE != "RNN":
     device = torch.device("mps")
 else:
     device = torch.device("cpu")
@@ -60,12 +63,17 @@ print(f"Using device: {device}")
 
 ## 모델 생성 ##
 
-if MODEL_TYPE == "LSTM":
-    model = models.lstm.SentimentLSTM(
-        vocab_size=vocab_size,
-        embedding_dim=EMBEDDING_DIM,
-        hidden_size=HIDDEN_SIZE
-    )
+MODEL_TYPES = {
+    "RNN": models.rnn.SentimentRNN,
+    "LSTM": models.lstm.SentimentLSTM
+}
+model_constructor = MODEL_TYPES[MODEL_TYPE]
+
+model = model_constructor(
+    vocab_size=vocab_size,
+    embedding_dim=EMBEDDING_DIM,
+    hidden_size=HIDDEN_SIZE
+)
 
 # 체크포인트 로드 위치
 LOAD_DIR = Path(__file__).resolve().parent.parent / "checkpoints"

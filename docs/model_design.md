@@ -87,10 +87,8 @@ Output     : (batch_size, 1)
 - 희소 빈도 처리를 하는 경우 min_freq = 3
 
 평가 지표
-- Accuracy
-- Train Loss
-- Validation Loss
-- 학습 시간
+- Best Validation Loss
+- Test Accuracy
 
 비교 대상
 1. 기본 전처리
@@ -115,10 +113,8 @@ Baseline
 - Majority Baseline (Accuracy)
 
 평가 지표
-- Accuracy
-- Train Loss
-- Validation Loss
-- 학습 시간
+- Best Validation Loss
+- Test Accuracy
 
 비교 대상
 1. RNN
@@ -137,10 +133,8 @@ Baseline
 - 하이퍼파라미터: 초기값 사용 (필요시 튜닝된 값 사용)
 
 평가 지표
-- Accuracy
-- Train Loss
-- Validation Loss
-- 학습 시간
+- Best Validation Loss
+- Test Accuracy
 
 비교 대상
 1. Dropout 미적용

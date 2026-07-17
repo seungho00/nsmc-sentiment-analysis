@@ -34,6 +34,7 @@
 - Model: LSTM
 - Data: 기본 전처리 (특수문자 `.,!?^~;` 공백 분리)
 - Max Length: 5
+- Best validation loss 기준 모델 저장(Model Checkpointing)
 
 | embedding_dim | hidden_size | Best Epoch | Best Valid Loss | Test Accuracy |
 |-:|-:|-:|-:|-:|
@@ -61,6 +62,7 @@ hidden_size = 32
 - Embedding Dimension: 32
 - Hidden size: 32
 - Data: 기본 전처리 (특수문자 `.,!?^~;` 공백 분리)
+- Best validation loss 기준 모델 저장(Model Checkpointing)
 
 | Length | Coverage
 |-:|-:|
@@ -93,6 +95,11 @@ hidden_size = 32
 - Embedding dimension: 32
 - Hidden size: 32
 - max_length: 각 전처리 방식에서 90% coverage를 만족하는 값
+- Best validation loss 기준 모델 저장(Model Checkpointing)
+
+평가 지표
+- Best Validation Loss
+- Test Accuracy
 
 ### 1. 기본 전처리
 전처리 방식:
@@ -140,3 +147,22 @@ hidden_size = 32
 - 감성 표현 전처리는 Basic 전처리보다 성능이 소폭 감소하였다. 추가한 규칙들이 NSMC 데이터셋에서는 유의미한 정보를 제공하지 못했거나, 오히려 일부 정보를 손실시켰을 가능성이 있다.
 - Subword는 Character-level과 거의 동일한 성능을 보였으며, 약 절반 수준의 시퀀스 길이(max_length 37 vs. 75)로 유사한 정확도를 달성하여 효율적인 토큰화 방식임을 확인하였다.
 - 전반적으로 한국어 감성 분석에서는 단순 단어 단위 토큰화보다 형태소 분석(Morpheme)이나 OOV에 강한 토큰화 방식(Character-level, Subword)이 더 효과적인 것으로 나타났다.
+
+
+## 실험 2. 모델 비교
+
+고정 조건
+- 전처리: 형태소 분석 (Mecab)
+- Min frequency: 3
+- max_length: 39 (형태소 분석에서 90% coverage)
+- Embedding dimension: 32
+- Hidden size: 32
+- Dropout 미적용
+- Best validation loss 기준 모델 저장(Model Checkpointing)
+
+평가 지표
+- Best Validation Loss
+- Test Accuracy
+- F1-score
+- Confusion Matrix
+- Train/Validation Loss 그래프

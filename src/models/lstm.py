@@ -11,7 +11,7 @@ class SentimentLSTM(nn.Module):
             padding_idx=0
         )
 
-        self.double_lstm = nn.LSTM(
+        self.lstm = nn.LSTM(
             input_size=embedding_dim,
             hidden_size=hidden_size,
             num_layers=2,
@@ -26,7 +26,7 @@ class SentimentLSTM(nn.Module):
     def forward(self, x):
         x = self.embedding(x)
         
-        output, (h_n, c_n) = self.double_lstm(x)
+        output, (h_n, c_n) = self.lstm(x)
 
         x = self.fc(h_n[-1]).squeeze(1)
 

@@ -8,6 +8,7 @@ import models
 import dataset as my_dataset
 from config import (
     MODEL_TYPE,
+    DEVICE,
     EMBEDDING_DIM,
     HIDDEN_SIZE,
     LEARNING_RATE,
@@ -68,6 +69,7 @@ loader_valid = DataLoader(
 ## 모델 생성 ##
 
 MODEL_TYPES = {
+    "RNN": models.rnn.SentimentRNN,
     "LSTM": models.lstm.SentimentLSTM
 }
 model_constructor = MODEL_TYPES[MODEL_TYPE]
@@ -80,9 +82,11 @@ model = model_constructor(
 
 
 # 계산 장치 지정
-if torch.cuda.is_available():
+if DEVICE is not None:
+    device = torch.device(DEVICE)
+elif torch.cuda.is_available():
     device = torch.device("cuda")
-elif torch.backends.mps.is_available():
+elif torch.backends.mps.is_available() and MODEL_TYPE != "RNN":
     device = torch.device("mps")
 else:
     device = torch.device("cpu")

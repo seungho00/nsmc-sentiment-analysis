@@ -38,6 +38,7 @@
 - [x] LSTM 모델 구현
 - [x] 학습 루프 작성 (train / eval 분리)
 - [x] 모델 저장 및 로드 기능 구현
+- [x] majority baseline vs 모델 성능 비교
 
 ---
 
@@ -63,21 +64,17 @@
 - [ ] Bi-LSTM 모델 구현 및 실험
 - [ ] BERT 모델과 성능 비교
 
+### 실험 2 평가
+- [ ] Confusion Matrix 출력 (모든 모델)
+- [ ] Accuracy / F1-score 비교 정리
+- [ ] Loss / Accuracy 그래프 저장
+
 ### 실험 3
 - [ ] Dropout 구현 및 실험
 
 ---
 
-## 5. 평가 및 분석
-
-- [ ] Confusion Matrix 출력 (모든 모델)
-- [ ] Accuracy / F1-score 비교 정리
-- [ ] Loss / Accuracy 그래프 저장
-- [ ] majority baseline vs 모델 성능 비교
-
----
-
-## 6. 문서화
+## 5. 문서화
 
 - [ ] README 작성 (데이터, 모델 구조, 사용 방법)
 - [ ] 실험 결과 정리 (table + 분석)
