@@ -41,7 +41,7 @@ df["document"].to_csv(
 spm.SentencePieceTrainer.train(
     input=str(input_path),
     model_prefix=str(MODEL_PATH / "sentencepiece"),
-    vocab_size=16384,
+    vocab_size=8192,
     hard_vocab_limit=False,
     model_type="unigram",
     character_coverage=1.0,

@@ -52,7 +52,7 @@ if DEVICE is not None:
     device = torch.device(DEVICE)
 elif torch.cuda.is_available():
     device = torch.device("cuda")
-elif torch.backends.mps.is_available() and MODEL_TYPE != "RNN":
+elif torch.backends.mps.is_available():
     device = torch.device("mps")
 else:
     device = torch.device("cpu")
@@ -63,6 +63,11 @@ print(f"Using device: {device}")
 
 ## 모델 생성 ##
 
+# 체크포인트 로드 위치
+LOAD_DIR = Path(__file__).resolve().parent.parent / "checkpoints"
+load_path = LOAD_DIR / f"best_{MODEL_TYPE}.pt"
+
+# 모델 타입 선택
 MODEL_TYPES = {
     "RNN": models.rnn.SentimentRNN,
     "LSTM": models.lstm.SentimentLSTM
@@ -74,10 +79,6 @@ model = model_constructor(
     embedding_dim=EMBEDDING_DIM,
     hidden_size=HIDDEN_SIZE
 )
-
-# 체크포인트 로드 위치
-LOAD_DIR = Path(__file__).resolve().parent.parent / "checkpoints"
-load_path = LOAD_DIR / f"best_{MODEL_TYPE}.pt"
 
 # checkpoint 로드
 model.load_state_dict(

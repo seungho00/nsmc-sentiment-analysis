@@ -3,6 +3,7 @@ import torch.nn as nn
 from torch.optim import Adam
 from torch.utils.data import Dataset, DataLoader
 from pathlib import Path
+import pickle
 
 import models
 import dataset as my_dataset
@@ -86,7 +87,7 @@ if DEVICE is not None:
     device = torch.device(DEVICE)
 elif torch.cuda.is_available():
     device = torch.device("cuda")
-elif torch.backends.mps.is_available() and MODEL_TYPE != "RNN":
+elif torch.backends.mps.is_available():
     device = torch.device("mps")
 else:
     device = torch.device("cpu")
@@ -99,20 +100,40 @@ print(f"Using device: {device}")
 
 ## 학습 진행 ##
 
-# 체크포인트 저장 위치
-SAVE_DIR = Path(__file__).resolve().parent.parent / "checkpoints"
-save_path = SAVE_DIR / f"best_{MODEL_TYPE}.pt"
-
 # 손실 함수, 옵티마이저 지정
 criterion = nn.BCEWithLogitsLoss()
 optimizer = Adam(model.parameters(), lr=LEARNING_RATE)
+
+# 체크포인트 저장 위치
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+CHECKPOINT_DIR = BASE_DIR / "checkpoints"
+
+CHECKPOINT_DIR.mkdir(
+    parents=True,
+    exist_ok=True
+)
+
+model_save_path = CHECKPOINT_DIR / f"best_{MODEL_TYPE}.pt"
+
+
+# 학습 과정 저장용 변수
+losses_train = []
+losses_valid = []
+
+accs_train = []
+accs_valid = []
+
+# 검증 데이터에 대한 최소 loss 저장 변수
+best_loss_valid = float("inf")
 
 for epoch in range(EPOCHS):
 
     # train
     model.train()
 
-    total_loss = 0
+    total_loss_train = 0
+    correct_train = 0
 
     for inputs, labels in loader_train:
         
@@ -135,14 +156,25 @@ for epoch in range(EPOCHS):
         # weight update
         optimizer.step()
 
-        total_loss += loss.item()
+        total_loss_train += loss.item()
+
+        # 정확도 측정
+        with torch.no_grad():
+            pred = (torch.sigmoid(logits) > 0.5).long()
+            correct_train += (pred.squeeze() == labels).sum().item()
+
+    # 현재 에포크의 손실, 정확도 저장
+    losses_train.append(total_loss_train / len(loader_train))
+    accs_train.append(correct_train / len(loader_train.dataset))
 
 
-    # validation
+
+    ## validation ##
+
     model.eval()
     
-    best_loss_valid = float("inf")
     total_loss_valid = 0
+    valid_correct = 0
 
     with torch.no_grad():
         for inputs, labels in loader_valid:
@@ -158,11 +190,20 @@ for epoch in range(EPOCHS):
             loss = criterion(logits, labels)
 
             total_loss_valid += loss.item()
+            
+            # valid 정확도 측정
+            pred = (torch.sigmoid(logits) > 0.5).long()
+            valid_correct += (pred.squeeze() == labels).sum().item()
+
+        # 현재 에포크의 손실, 정확도 저장
+        losses_valid.append(total_loss_valid / len(loader_valid))
+        accs_valid.append(valid_correct / len(loader_valid.dataset))
 
 
+    # 학습 과정 출력
     print(
         f"Epoch {epoch+1}/{EPOCHS} | "
-        f"Train Loss: {total_loss / len(loader_train):.4f} | "
+        f"Train Loss: {total_loss_train / len(loader_train):.4f} | "
         f"Valid Loss: {total_loss_valid / len(loader_valid):.4f}"
     )
 
@@ -173,5 +214,24 @@ for epoch in range(EPOCHS):
 
         torch.save(
             model.state_dict(),
-            save_path
+            model_save_path
         )
+
+
+# 학습 과정 저장
+HISTORY_DIR = BASE_DIR / "results" / MODEL_TYPE.lower()
+
+HISTORY_DIR.mkdir(
+    parents=True,
+    exist_ok=True
+)
+
+history = {
+    "loss_train": losses_train,
+    "acc_train": accs_train,
+    "loss_valid": losses_valid,
+    "acc_valid": accs_valid
+}
+history_save_path = HISTORY_DIR / "history.pkl"
+with open(history_save_path, "wb") as f:
+    pickle.dump(history, f)
