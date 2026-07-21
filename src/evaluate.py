@@ -1,6 +1,8 @@
 import torch
 from torch.utils.data import DataLoader
 from pathlib import Path
+import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 import models
 import dataset as my_dataset
@@ -10,7 +12,7 @@ from config import (
     EMBEDDING_DIM,
     HIDDEN_SIZE,
     BATCH_SIZE,
-    )
+)
 
 
 ## 데이터 로드 ##
@@ -19,7 +21,7 @@ vocab_size = my_dataset.load_vocab_size()
 
 # 데이터 타입 변환
 x_test = torch.tensor(x_test)
-y_test = torch.tensor(y_test, dtype=torch.float32)
+y_test = torch.tensor(y_test)
 
 
 
@@ -64,8 +66,10 @@ print(f"Using device: {device}")
 ## 모델 생성 ##
 
 # 체크포인트 로드 위치
-LOAD_DIR = Path(__file__).resolve().parent.parent / "checkpoints"
+BASE_DIR = Path(__file__).resolve().parent.parent
+LOAD_DIR = BASE_DIR / "checkpoints"
 load_path = LOAD_DIR / f"best_{MODEL_TYPE}.pt"
+save_path = BASE_DIR / f"results/{MODEL_TYPE}/confusion_matrix.png"
 
 # 모델 타입 선택
 MODEL_TYPES = {
@@ -82,7 +86,7 @@ model = model_constructor(
 
 # checkpoint 로드
 model.load_state_dict(
-    torch.load(load_path)
+    torch.load(load_path, map_location=device)
 )
 model = model.to(device)
 
@@ -92,24 +96,34 @@ model.eval()
 
 ## 추론 ##
 
-correct = 0
-num_samples = 0
+preds = []
+labels = []
 
 with torch.no_grad():
 
-    for inputs, labels in loader_test:
+    for inputs, targets in loader_test:
 
         inputs = inputs.to(device)
-        labels = labels.to(device)
 
         logits = model(inputs)
 
-        preds = (torch.sigmoid(logits) >= 0.5).float()
+        pred = (torch.sigmoid(logits) >= 0.5).long().cpu()
 
-        correct += (preds == labels).sum().item()
-        num_samples += len(labels)
+        preds.extend(pred.numpy())
+        labels.extend(targets.numpy())
 
 
-accuracy = correct / num_samples
+accuracy = sum(p == l for p, l in zip(preds, labels)) / len(loader_test.dataset)
 
 print(f"Test Accuracy: {accuracy:.4f}")
+
+
+# confusion matrix
+cm = confusion_matrix(labels, preds)
+print(cm)
+
+disp = ConfusionMatrixDisplay(cm, display_labels=["Negative", "Positive"])
+disp.plot(cmap="Blues")
+
+plt.savefig(save_path, dpi=300, bbox_inches="tight")
+plt.close()

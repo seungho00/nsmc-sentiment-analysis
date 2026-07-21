@@ -65,9 +65,9 @@
 - [ ] BERT 모델과 성능 비교
 
 ### 실험 2 평가
-- [ ] Confusion Matrix 출력 (모든 모델)
+- [x] Confusion Matrix 출력 (모든 모델)
 - [ ] Accuracy / F1-score 비교 정리
-- [ ] Loss / Accuracy 그래프 저장
+- [x] Loss / Accuracy 그래프 저장
 
 ### 실험 3
 - [ ] Dropout 구현 및 실험

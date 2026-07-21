@@ -165,3 +165,6 @@ Test Accuracy: 0.7341
 
 ## 2026-07-18
 (loss/acc 그래프 visualization 구현)
+
+## 2026-07-21
+(Confusion Matrix 구현)
