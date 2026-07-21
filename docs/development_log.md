@@ -173,3 +173,9 @@ Test Accuracy: 0.7341
 - PyTorch Tensor는 GPU 메모리에 있을 수 있으므로 바로 NumPy 배열로 변환하지 말고 이를 고려해야 한다. 만약 GPU 메모리에 있다면 `tensor.cpu().numpy()` 순서로 변환해야 한다.
 - PyTorch의 LSTM은 `bidirectional=True` 옵션으로 BiLSTM을 지원한다. 연결, 합, 평균 방식 중에 연결 방식을 이용한다. 합(sum)이나 평균(mean) 방식이 필요하다면 직접 구현해야 한다.
 - BiLSTM의 `h_n` 형상은 `(num_layers × num_directions, batch_size, hidden_size)`이다. 예를 들어 2층 BiLSTM이라면 `(4, batch_size, hidden_size)`가 되며, 순서는 `1층 forward → 1층 backward → 2층 forward → 2층 backward`이다.
+
+
+## 2026-07-22
+(history.pkl을 json으로 변환)
+
+- 실험 결과를 python으로 출력하지 않아도 쉽게 접근할 수 있도록 json 형식으로 변환했다.

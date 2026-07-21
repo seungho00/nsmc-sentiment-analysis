@@ -115,13 +115,15 @@ Baseline
 평가 지표
 - Best Validation Loss
 - Test Accuracy
+- Confusion Matrix
+- F1-Score
 
 비교 대상
 1. RNN
 2. LSTM
 3. GRU
-4. Bi-LSTM
-5. BERT
+4. Bi-LSTM (hidden_size는 단방향 모델의 절반 크기 사용)
+5. Bi-GRU (hidden_size는 단방향 모델의 절반 크기 사용)
 
 ---
 
@@ -135,7 +137,26 @@ Baseline
 평가 지표
 - Best Validation Loss
 - Test Accuracy
+- Confusion Matrix
+- F1-Score
 
 비교 대상
 1. Dropout 미적용
-2. Dropout = 0.2
+2. Dropout = 0.2 (변동 가능)
+
+
+### 4. 추가 실험 (BERT)
+
+사전학습 기반 Transformer 모델(BERT)의 성능을 확인하기 위한 실험.
+
+사전학습 모델: klue/bert-base (변동 가능)
+
+평가 지표
+- Best Validation Loss
+- Test Accuracy
+- Confusion Matrix
+- F1-Score
+
+비교 대상
+- BERT
+- 실험 2에서 가장 성능이 우수했던 모델

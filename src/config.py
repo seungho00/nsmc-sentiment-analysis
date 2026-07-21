@@ -6,7 +6,7 @@ PAD_ID = 0
 UNK_ID = 1
 TOKENIZER = "morpheme"
 
-MODEL_TYPE = "BiGRU"
+MODEL_TYPE = "RNN"
 DEVICE = "cpu"
 # DEVICE = None
 EMBEDDING_DIM = 32

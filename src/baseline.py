@@ -1,7 +1,7 @@
-import dataset
+import data_utils
 import pandas as pd
 
-(_, y_train), (_, y_valid), (_, y_test) = dataset.load_data()
+(_, y_train), (_, y_valid), (_, y_test) = data_utils.load_data()
 
 # Majority class
 majority_label = y_train.value_counts().idxmax()

@@ -3,10 +3,10 @@ import torch.nn as nn
 from torch.optim import Adam
 from torch.utils.data import Dataset, DataLoader
 from pathlib import Path
-import pickle
+import json
 
 import models
-import dataset as my_dataset
+import data_utils
 from config import (
     MODEL_TYPE,
     DEVICE,
@@ -21,8 +21,8 @@ from config import (
 
 ## 데이터 불러오기 ##
 
-(x_train, y_train), (x_valid, y_valid), _ = my_dataset.load_data()
-vocab_size = my_dataset.load_vocab_size()
+(x_train, y_train), (x_valid, y_valid), _ = data_utils.load_data()
+vocab_size = data_utils.load_vocab_size()
 
 # numpy에서 torch.tensor 타입으로 변환
 x_train = torch.tensor(x_train)
@@ -235,6 +235,13 @@ history = {
     "loss_valid": losses_valid,
     "acc_valid": accs_valid
 }
-history_save_path = HISTORY_DIR / "history.pkl"
-with open(history_save_path, "wb") as f:
-    pickle.dump(history, f)
+history_save_path = HISTORY_DIR / "history.json"
+
+best_valid_loss = min(history["loss_valid"])
+best_epoch = history["loss_valid"].index(best_valid_loss) + 1
+
+history["best_valid_loss"] = best_valid_loss
+history["best_epoch"] = best_epoch
+
+with open(history_save_path, "w", encoding="utf-8") as f:
+    json.dump(history, f, indent=4)

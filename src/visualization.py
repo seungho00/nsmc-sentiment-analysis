@@ -1,5 +1,5 @@
 from pathlib import Path
-import pickle
+import json
 import matplotlib.pyplot as plt
 
 from config import MODEL_TYPE
@@ -7,10 +7,10 @@ from config import MODEL_TYPE
 BASE_DIR = Path(__file__).resolve().parent.parent
 HISTORY_DIR = BASE_DIR / f"results/{MODEL_TYPE.lower()}"
 
-# pickle 불러오기
-load_path = HISTORY_DIR / "history.pkl"
-with open(load_path, "rb") as f:
-    history = pickle.load(f)
+# json 불러오기
+load_path = HISTORY_DIR / "history.json"
+with open(load_path, "r", encoding="utf-8") as f:
+    history = json.load(f)
 
 # 그래프 저장위치 지정
 loss_save_path = HISTORY_DIR / "loss.png"

@@ -7,9 +7,10 @@ from sklearn.metrics import (
     ConfusionMatrixDisplay,
     f1_score
 )
+import json
 
 import models
-import dataset as my_dataset
+import data_utils
 from config import (
     MODEL_TYPE,
     DEVICE,
@@ -20,8 +21,8 @@ from config import (
 
 
 ## 데이터 로드 ##
-_, _, (x_test, y_test) = my_dataset.load_data()
-vocab_size = my_dataset.load_vocab_size()
+_, _, (x_test, y_test) = data_utils.load_data()
+vocab_size = data_utils.load_vocab_size()
 
 # 데이터 타입 변환
 x_test = torch.tensor(x_test)
@@ -73,7 +74,7 @@ print(f"Using device: {device}")
 BASE_DIR = Path(__file__).resolve().parent.parent
 LOAD_DIR = BASE_DIR / "checkpoints"
 load_path = LOAD_DIR / f"best_{MODEL_TYPE}.pt"
-save_path = BASE_DIR / f"results/{MODEL_TYPE}/confusion_matrix.png"
+SAVE_DIR = BASE_DIR / f"results/{MODEL_TYPE}"
 
 # 모델 타입 선택
 MODEL_TYPES = {
@@ -120,22 +121,28 @@ with torch.no_grad():
         labels.extend(targets.numpy())
 
 
+# acc/f1-score 출력 및 저장
 accuracy = sum(p == l for p, l in zip(preds, labels)) / len(loader_test.dataset)
-
 print(f"Test Accuracy: {accuracy:.4f}")
 
+f1 = f1_score(labels, preds)
+print(f"F1-score: {f1:.4f}")
 
-# confusion matrix
+metrics = {
+    "test accuracy": accuracy,
+    "f1-score": f1
+}
+
+with open(SAVE_DIR/"metrics.json", "w", encoding="utf-8") as f:
+    json.dump(metrics, f, indent=4)
+
+
+# confusion matrix 출력 및 저장
 cm = confusion_matrix(labels, preds)
 print(cm)
 
 disp = ConfusionMatrixDisplay(cm, display_labels=["Negative", "Positive"])
-disp.plot(cmap="Blues")
+disp.plot(cmap="Blues", values_format="d")
 
-plt.savefig(save_path, dpi=300, bbox_inches="tight")
+plt.savefig(SAVE_DIR/"confusion_matrix.png", dpi=300, bbox_inches="tight")
 plt.close()
-
-
-# f1-score
-f1 = f1_score(labels, preds)
-print(f"F1-score: {f1:.4f}")

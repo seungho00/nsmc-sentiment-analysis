@@ -135,7 +135,7 @@ hidden_size = 32
 | Tokenizer | vocab_size | max_length | Best Epoch | Best Valid Loss | Test Accuracy |
 |:-|-:|-:|-:|-:|-:|
 | Basic | 39,510 | 21 | 4 | 0.4026 | 0.8078 |
-| Sentiment | 39520 | 19 | 5 | 0.4084 | 0.8092 |
+| Sentiment | 39,520 | 19 | 5 | 0.4084 | 0.8092 |
 | Character-level | 2,939 | 75 | 9 | 0.3478 | 0.8471 |
 | Morpheme | 21,449 | 39 | 7 | 0.3276 | 0.8578 |
 | Subword | 8,192 | 37 | 6 | 0.3395 | 0.8488 |
@@ -158,6 +158,7 @@ hidden_size = 32
 - Embedding dimension: 32
 - Hidden size: 32
 - Dropout 미적용
+- Epoch: 10
 - Best validation loss 기준 모델 저장(Model Checkpointing)
 
 평가 지표
@@ -166,3 +167,21 @@ hidden_size = 32
 - F1-score
 - Confusion Matrix
 - Train/Validation Loss 그래프
+
+비교 모델
+- RNN
+- LSTM
+- GRU
+- BiLSTM (hidden_size는 단방향 모델의 절반)
+- BiGRU (hidden_size는 단방향 모델의 절반)
+
+### 결론
+(각 모델의 loss, acc 그래프로 confusion matrix의 이미지는 `reuslts`폴더의 각 모델 폴더 안에서 볼 수 있다)
+
+| Model | Best Epoch | Best Valid Loss | Test Accuracy | F1-score | 
+|:-|-:|-:|-:|-:|
+| RNN | 10 | 0.5636 | 0.7420 | 0.7299 |
+| LSTM | 5 | 0.3226 | 0.8574 | 0.8580 |
+| GRU | 4 | 0.3210 | 0.8577 | 0.8573 |
+| BiLSTM | 3 | 0.3314 | 0.8535 | 0.8580 |
+| BiGRU | 4 | 0.3257 | 0.8568 | 0.8567 |

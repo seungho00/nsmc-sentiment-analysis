@@ -58,20 +58,22 @@
 - [x] 형태소 분석
 - [x] subword Tokenization
 
-### 실험 2
+### 실험 2 (구현)
 - [x] RNN 모델 구현 및 실험
 - [x] GRU 모델 구현 및 실험
 - [x] Bi-LSTM 모델 구현 및 실험
 - [x] Bi-GRU 모델 구현 및 실험
-- [ ] BERT 모델과 성능 비교
 
-### 실험 2 평가
+### 실험 2 (평가)
 - [x] Confusion Matrix 출력 (모든 모델)
 - [ ] Accuracy / F1-score 비교 정리
 - [x] Loss / Accuracy 그래프 저장
 
 ### 실험 3
 - [ ] Dropout 구현 및 실험
+
+### 실험 4
+- [ ] BERT 모델 구현 및 다른 모델들과 성능 비교
 
 ---
 
