@@ -81,6 +81,7 @@ MODEL_TYPES = {
     "LSTM": models.lstm.SentimentLSTM,
     "GRU": models.gru.SentimentGRU,
     "BiLSTM": models.bilstm.SentimentBiLSTM,
+    "BiGRU": models.bigru.SentimentBiGRU,
 }
 model_constructor = MODEL_TYPES[MODEL_TYPE]
 
