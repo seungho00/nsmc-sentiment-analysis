@@ -167,4 +167,7 @@ Test Accuracy: 0.7341
 (loss/acc 그래프 visualization 구현)
 
 ## 2026-07-21
-(Confusion Matrix 구현)
+(Confusion Matrix 구현, f1-score 구현)
+
+- numpy는 cpu에서만 연산이 가능하다. 따라서 gpu를 사용 중이었다면 cpu에 데이터를 올려줘야 한다.
+- 또한 cpu와 gpu의 메모리가 각각 있기 때문에, torch.tensor는 바로 numpy 변환을 못하고 tensor.cpu() 이후에 tensor.numpy()가 가능하다.

@@ -30,6 +30,7 @@ plt.title("Loss")
 plt.legend()
 plt.grid(True)
 plt.savefig(loss_save_path, dpi=300, bbox_inches="tight")
+plt.close()
 
 
 # Accuracy
@@ -42,3 +43,4 @@ plt.title("Accuracy")
 plt.legend()
 plt.grid(True)
 plt.savefig(acc_save_path, dpi=300, bbox_inches="tight")
+plt.close()

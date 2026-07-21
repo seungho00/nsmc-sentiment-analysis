@@ -2,7 +2,11 @@ import torch
 from torch.utils.data import DataLoader
 from pathlib import Path
 import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import (
+    confusion_matrix,
+    ConfusionMatrixDisplay,
+    f1_score
+)
 
 import models
 import dataset as my_dataset
@@ -127,3 +131,8 @@ disp.plot(cmap="Blues")
 
 plt.savefig(save_path, dpi=300, bbox_inches="tight")
 plt.close()
+
+
+# f1-score
+f1 = f1_score(labels, preds)
+print(f"F1-score: {f1:.4f}")
