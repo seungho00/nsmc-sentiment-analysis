@@ -167,7 +167,9 @@ Test Accuracy: 0.7341
 (loss/acc 그래프 visualization 구현)
 
 ## 2026-07-21
-(Confusion Matrix 구현, f1-score 구현, gru 구현)
+(Confusion Matrix 구현, f1-score 구현, gru 구현, bilstm 구현)
 
-- numpy는 cpu에서만 연산이 가능하다. 따라서 gpu를 사용 중이었다면 cpu에 데이터를 올려줘야 한다.
-- 또한 cpu와 gpu의 메모리가 각각 있기 때문에, torch.tensor는 바로 numpy 변환을 못하고 tensor.cpu() 이후에 tensor.numpy()가 가능하다.
+- NumPy는 CPU에서만 연산이 가능하다. 따라서 GPU에서 계산한 Tensor는 `.cpu()`로 CPU 메모리로 옮긴 후 사용해야 한다.
+- PyTorch Tensor는 GPU 메모리에 있을 수 있으므로 바로 NumPy 배열로 변환하지 말고 이를 고려해야 한다. 만약 GPU 메모리에 있다면 `tensor.cpu().numpy()` 순서로 변환해야 한다.
+- PyTorch의 LSTM은 `bidirectional=True` 옵션으로 BiLSTM을 지원한다. 연결, 합, 평균 방식 중에 연결 방식을 이용한다. 합(sum)이나 평균(mean) 방식이 필요하다면 직접 구현해야 한다.
+- BiLSTM의 `h_n` 형상은 `(num_layers × num_directions, batch_size, hidden_size)`이다. 예를 들어 2층 BiLSTM이라면 `(4, batch_size, hidden_size)`가 되며, 순서는 `1층 forward → 1층 backward → 2층 forward → 2층 backward`이다.

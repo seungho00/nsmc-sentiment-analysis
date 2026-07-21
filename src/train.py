@@ -73,6 +73,7 @@ MODEL_TYPES = {
     "RNN": models.rnn.SentimentRNN,
     "LSTM": models.lstm.SentimentLSTM,
     "GRU": models.gru.SentimentGRU,
+    "BiLSTM": models.bilstm.SentimentBiLSTM,
 }
 model_constructor = MODEL_TYPES[MODEL_TYPE]
 
