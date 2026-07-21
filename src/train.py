@@ -71,7 +71,8 @@ loader_valid = DataLoader(
 
 MODEL_TYPES = {
     "RNN": models.rnn.SentimentRNN,
-    "LSTM": models.lstm.SentimentLSTM
+    "LSTM": models.lstm.SentimentLSTM,
+    "GRU": models.gru.SentimentGRU,
 }
 model_constructor = MODEL_TYPES[MODEL_TYPE]
 

@@ -59,8 +59,8 @@
 - [x] subword Tokenization
 
 ### 실험 2
-- [ ] RNN 모델 구현 및 실험
-- [ ] GRU 모델 구현 및 실험
+- [x] RNN 모델 구현 및 실험
+- [x] GRU 모델 구현 및 실험
 - [ ] Bi-LSTM 모델 구현 및 실험
 - [ ] BERT 모델과 성능 비교
 

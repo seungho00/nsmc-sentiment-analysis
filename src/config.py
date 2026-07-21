@@ -7,8 +7,8 @@ UNK_ID = 1
 TOKENIZER = "morpheme"
 
 MODEL_TYPE = "LSTM"
-# DEVICE = "cpu"
-DEVICE = None
+DEVICE = "cpu"
+# DEVICE = None
 EMBEDDING_DIM = 32
 HIDDEN_SIZE = 32
 

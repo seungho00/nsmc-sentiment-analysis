@@ -78,7 +78,8 @@ save_path = BASE_DIR / f"results/{MODEL_TYPE}/confusion_matrix.png"
 # 모델 타입 선택
 MODEL_TYPES = {
     "RNN": models.rnn.SentimentRNN,
-    "LSTM": models.lstm.SentimentLSTM
+    "LSTM": models.lstm.SentimentLSTM,
+    "GRU": models.gru.SentimentGRU,
 }
 model_constructor = MODEL_TYPES[MODEL_TYPE]
 

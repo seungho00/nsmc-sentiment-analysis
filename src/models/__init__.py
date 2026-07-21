@@ -1,4 +1,8 @@
 from . import (
+    rnn,
     lstm,
-    rnn
+    gru,
+    bilstm,
+    bigru,
+    bert
 )
