@@ -17,6 +17,7 @@ from config import (
     EMBEDDING_DIM,
     HIDDEN_SIZE,
     BATCH_SIZE,
+    EXPERIMENT_NAME,
 )
 
 
@@ -74,7 +75,7 @@ print(f"Using device: {device}")
 BASE_DIR = Path(__file__).resolve().parent.parent
 LOAD_DIR = BASE_DIR / "checkpoints"
 load_path = LOAD_DIR / f"best_{MODEL_TYPE}.pt"
-SAVE_DIR = BASE_DIR / f"results/{MODEL_TYPE}"
+SAVE_DIR = BASE_DIR / f"results/{EXPERIMENT_NAME}/{MODEL_TYPE}"
 
 # 모델 타입 선택
 MODEL_TYPES = {

@@ -12,10 +12,12 @@ from config import (
     DEVICE,
     EMBEDDING_DIM,
     HIDDEN_SIZE,
+    DROPOUT,
     LEARNING_RATE,
     BATCH_SIZE,
-    EPOCHS
-    )
+    EPOCHS,
+    EXPERIMENT_NAME
+)
 
 
 
@@ -81,7 +83,8 @@ model_constructor = MODEL_TYPES[MODEL_TYPE]
 model = model_constructor(
     vocab_size=vocab_size,
     embedding_dim=EMBEDDING_DIM,
-    hidden_size=HIDDEN_SIZE
+    hidden_size=HIDDEN_SIZE,
+    dropout_rate=DROPOUT,
 )
 
 
@@ -222,7 +225,7 @@ for epoch in range(EPOCHS):
 
 
 # 학습 과정 저장
-HISTORY_DIR = BASE_DIR / "results" / MODEL_TYPE.lower()
+HISTORY_DIR = BASE_DIR / "results" / f"{EXPERIMENT_NAME}" / MODEL_TYPE.lower()
 
 HISTORY_DIR.mkdir(
     parents=True,

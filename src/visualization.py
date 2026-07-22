@@ -2,10 +2,10 @@ from pathlib import Path
 import json
 import matplotlib.pyplot as plt
 
-from config import MODEL_TYPE
+from config import MODEL_TYPE, EXPERIMENT_NAME
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-HISTORY_DIR = BASE_DIR / f"results/{MODEL_TYPE.lower()}"
+HISTORY_DIR = BASE_DIR / f"results/{EXPERIMENT_NAME}/{MODEL_TYPE.lower()}"
 
 # json 불러오기
 load_path = HISTORY_DIR / "history.json"

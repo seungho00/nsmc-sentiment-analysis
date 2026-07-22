@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 class SentimentBiLSTM(nn.Module):
-    def __init__(self, vocab_size, embedding_dim, hidden_size):
+    def __init__(self, vocab_size, embedding_dim, hidden_size, dropout_rate=0.0):
         super().__init__()
 
         self.embedding = nn.Embedding(
@@ -19,6 +19,8 @@ class SentimentBiLSTM(nn.Module):
             bidirectional=True
         )
 
+        self.dropout = nn.Dropout(dropout_rate)
+
         self.fc = nn.Linear(
             in_features=hidden_size,
             out_features=1
@@ -33,6 +35,8 @@ class SentimentBiLSTM(nn.Module):
         backward = h_n[-1]
         h = torch.cat((forward, backward), dim=1)
 
-        x = self.fc(h).squeeze(1)
+        x = self.dropout(h)
+
+        x = self.fc(x).squeeze(1)
 
         return x
