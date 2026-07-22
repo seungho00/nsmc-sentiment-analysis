@@ -175,10 +175,10 @@ hidden_size = 32
 - BiLSTM
 - BiGRU
 
-### 결론
-(각 모델의 loss, acc 그래프와 confusion matrix의 이미지는 `results`폴더의 각 모델 폴더 안에서 볼 수 있다)
+### 결과
+(각 모델의 loss, acc 그래프와 confusion matrix의 이미지는 `results/experiment2`폴더의 각 모델 폴더 안에서 볼 수 있다)
 
-| Model | Best Epoch | Best Valid Loss | Test Accuracy | F1-score | 
+| Model | Best Epoch | Best Valid Loss | Test Accuracy | F1-score |
 |:-|-:|-:|-:|-:|
 | RNN | 10 | 0.5636 | 0.7420 | 0.7299 |
 | LSTM | 5 | 0.3226 | 0.8574 | 0.8580 |
@@ -199,3 +199,44 @@ Confusion Matrix (True/Predicted)
 - 단방향 모델과 양방향 모델 간의 성능 차이는 매우 작았다. BiLSTM과 BiGRU가 일부 지표에서는 소폭 낮은 성능을 보였지만, 전체적으로는 오차 범위 내의 차이로 판단되어 양방향 구조가 성능 향상에 유의미한 영향을 주었다고 보기 어려웠다.
 - Confusion Matrix의 결과도 RNN을 제외하면 큰 차이를 보이지 않았다. 다만 BiLSTM은 Negative를 Positive로 오분류하는 비율(N/P)이 다소 증가한 반면, Positive를 Negative로 오분류하는 비율(P/N)은 가장 낮았다. 즉 Positive 클래스에 다소 치우친 예측 경향을 보였으나, 전체 성능에는 큰 차이를 만들지 않았다.
 - 전체적인 성능이 거의 동일하다면 구조가 비교적 단순하고 계산량이 적은 GRU를 사용하는 것이 효율적이라고 판단하였다. 따라서 실험 3(Dropout 효과)에서는 GRU를 기준 모델로 사용하였다.
+
+
+## 실험 3. Dropout 효과
+
+조건
+- dropout을 제외한 실험 2의 고정 조건과 동일
+- 실험 2의 GRU 모델 사용
+
+평가 지표
+- Best Validation Loss
+- Test Accuracy
+- F1-score
+- Confusion Matrix
+- Train/Validation Loss 그래프
+
+비교 dropout_rate
+- 0.0
+- 0.2
+
+### 결과
+
+| Dropout rate | Best Epoch | Best Valid Loss | Test Accuracy | F1-score |
+|-:|-:|-:|-:|-:|-:|-:|
+| 0.0 | 4 | 0.3210 | 0.8577 | 0.8573 |
+| 0.2 | 5 | 0.3296 | 0.8576 | 0.8588 |
+
+Confusion Matrix (True/Predicted)
+| Model | N/N | N/P | P/N | P/P | 
+|:-|-:|-:|-:|-:|
+| 0.0 | 21503 | 3323 | 3792 | 21379 |
+| 0.2 | 21221 | 3605 | 3517 | 21654 |
+
+- Dropout 0.2를 적용했을 때 Test Accuracy는 거의 동일했으며, F1-score는 소폭 증가하였다. 하지만 Best Validation Loss는 Dropout을 적용하지 않은 모델이 더 낮은 값을 기록하였다. 다만 두 결과의 차이는 크지 않아, 본 실험 환경에서는 Dropout의 뚜렷한 성능 향상 효과를 확인하지 못했다.
+
+- Confusion Matrix를 비교하면 Dropout 0.2를 적용한 모델은 Dropout을 적용하지 않은 모델보다 Positive 예측 비율이 증가하였다. 이로 인해 실제 Positive 중 올바르게 예측한 비율인 Positive Recall은 증가했지만, Negative를 Positive로 잘못 판단하는 경우(False Positive)도 증가하였다. Precision은 감소했지만 Recall 증가 폭이 더 커지면서 F1-score는 소폭 향상되었다. 하지만 전체적인 분류 성능 향상으로 이어지지는 않았다.
+
+- Dropout이 큰 효과를 발휘하지 못한 이유 중 하나는, 모델 학습 과정에서 Validation Loss를 기준으로 최적 모델을 저장하는 checkpointing을 적용하고 있기 때문으로 판단된다. Checkpointing을 통해 과적합이 진행되기 이전의 모델을 선택하기 때문에, 과적합이 심화된 후반 모델의 성능 차이가 최종 평가에 반영되지 않았다. 따라서 Dropout의 차이가 최종 평가에서 작게 보였을 가능성이 있다.
+
+- Train/Validation Loss 그래프를 비교했을 때 Dropout 0.0과 0.2 모델은 유사한 학습 패턴을 보였다. Dropout 0.2를 적용한 모델에서 과적합 발생 시점이 1 epoch 늦춰지는 경향은 있었지만, Validation Loss의 감소 폭과 이후 증가 양상이 크게 다르지 않았다. 따라서 checkpointing을 사용하지 않고 마지막 epoch의 모델을 사용하더라도 Dropout으로 인한 성능 차이는 크지 않았을 것으로 예상된다.
+
+- Dropout이 큰 효과를 발휘하지 못한 또 다른 이유로는, 본 실험의 GRU 모델은 약 70만 개의 학습 가능한 파라미터를 가지는 비교적 단순한 구조로 구성되어 있어 대규모 모델에 비하면 Dropout을 통한 규제 효과가 제한적이었을 가능성이 있다. 일반적으로 모델의 파라미터 수가 크고 과적합 위험이 높은 경우 Dropout의 효과가 크게 나타날 수 있지만, 본 실험의 GRU 모델에서는 추가적인 규제가 성능 향상으로 이어지지 않은 것으로 판단된다.
