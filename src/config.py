@@ -6,6 +6,7 @@ PAD_ID = 0
 UNK_ID = 1
 TOKENIZER = "morpheme"
 
+# RNN, LSTM, GRU, BiLSTM, BiGRU
 MODEL_TYPE = "RNN"
 DEVICE = "cpu"
 # DEVICE = None

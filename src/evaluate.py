@@ -121,23 +121,15 @@ with torch.no_grad():
         labels.extend(targets.numpy())
 
 
-# acc/f1-score 출력 및 저장
+# acc/f1-score 출력
 accuracy = sum(p == l for p, l in zip(preds, labels)) / len(loader_test.dataset)
 print(f"Test Accuracy: {accuracy:.4f}")
 
 f1 = f1_score(labels, preds)
 print(f"F1-score: {f1:.4f}")
 
-metrics = {
-    "test accuracy": accuracy,
-    "f1-score": f1
-}
 
-with open(SAVE_DIR/"metrics.json", "w", encoding="utf-8") as f:
-    json.dump(metrics, f, indent=4)
-
-
-# confusion matrix 출력 및 저장
+# confusion matrix 출력
 cm = confusion_matrix(labels, preds)
 print(cm)
 
@@ -146,3 +138,14 @@ disp.plot(cmap="Blues", values_format="d")
 
 plt.savefig(SAVE_DIR/"confusion_matrix.png", dpi=300, bbox_inches="tight")
 plt.close()
+
+
+# metrics 저장
+metrics = {
+    "test accuracy": accuracy,
+    "f1-score": f1,
+    "confusion matrix": cm.tolist()
+}
+
+with open(SAVE_DIR/"metrics.json", "w", encoding="utf-8") as f:
+    json.dump(metrics, f, indent=4)

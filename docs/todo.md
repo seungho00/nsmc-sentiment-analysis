@@ -66,7 +66,7 @@
 
 ### 실험 2 (평가)
 - [x] Confusion Matrix 출력 (모든 모델)
-- [ ] Accuracy / F1-score 비교 정리
+- [x] Accuracy / F1-score 비교 정리
 - [x] Loss / Accuracy 그래프 저장
 
 ### 실험 3

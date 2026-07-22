@@ -176,6 +176,6 @@ Test Accuracy: 0.7341
 
 
 ## 2026-07-22
-(history.pkl을 json으로 변환)
+(history.pkl을 json으로 변환, 실험 2 종료)
 
 - 실험 결과를 python으로 출력하지 않아도 쉽게 접근할 수 있도록 json 형식으로 변환했다.

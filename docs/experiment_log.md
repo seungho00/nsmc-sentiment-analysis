@@ -62,7 +62,7 @@ hidden_size = 32
 - Embedding Dimension: 32
 - Hidden size: 32
 - Data: 기본 전처리 (특수문자 `.,!?^~;` 공백 분리)
-- Best validation loss 기준 모델 저장(Model Checkpointing)
+- Best validation loss 기준 모델 저장 (Model Checkpointing)
 
 | Length | Coverage
 |-:|-:|
@@ -95,7 +95,7 @@ hidden_size = 32
 - Embedding dimension: 32
 - Hidden size: 32
 - max_length: 각 전처리 방식에서 90% coverage를 만족하는 값
-- Best validation loss 기준 모델 저장(Model Checkpointing)
+- Best validation loss 기준 모델 저장 (Model Checkpointing)
 
 평가 지표
 - Best Validation Loss
@@ -156,10 +156,10 @@ hidden_size = 32
 - Min frequency: 3
 - max_length: 39 (형태소 분석에서 90% coverage)
 - Embedding dimension: 32
-- Hidden size: 32
+- Hidden size: 32 (양방향 모델에서는 단방향 모델과 동일한 출력 차원을 맞추기 위해 절반으로 설정)
 - Dropout 미적용
 - Epoch: 10
-- Best validation loss 기준 모델 저장(Model Checkpointing)
+- Best validation loss 기준 모델 저장 (Model Checkpointing)
 
 평가 지표
 - Best Validation Loss
@@ -172,11 +172,11 @@ hidden_size = 32
 - RNN
 - LSTM
 - GRU
-- BiLSTM (hidden_size는 단방향 모델의 절반)
-- BiGRU (hidden_size는 단방향 모델의 절반)
+- BiLSTM
+- BiGRU
 
 ### 결론
-(각 모델의 loss, acc 그래프로 confusion matrix의 이미지는 `reuslts`폴더의 각 모델 폴더 안에서 볼 수 있다)
+(각 모델의 loss, acc 그래프와 confusion matrix의 이미지는 `results`폴더의 각 모델 폴더 안에서 볼 수 있다)
 
 | Model | Best Epoch | Best Valid Loss | Test Accuracy | F1-score | 
 |:-|-:|-:|-:|-:|
@@ -185,3 +185,17 @@ hidden_size = 32
 | GRU | 4 | 0.3210 | 0.8577 | 0.8573 |
 | BiLSTM | 3 | 0.3314 | 0.8535 | 0.8580 |
 | BiGRU | 4 | 0.3257 | 0.8568 | 0.8567 |
+
+Confusion Matrix (True/Predicted)
+| Model | N/N | N/P | P/N | P/P | 
+|:-|-:|-:|-:|-:|
+| RNN | 19656 | 5170 | 7734 | 17437 |
+| LSTM | 21331 | 3495 | 3634 | 21537 |
+| GRU | 21503 | 3323 | 3792 | 21379 |
+| BiLSTM | 20535 | 4291 | 3035 | 22136 |
+| BiGRU | 21449 | 3377 | 3781 | 21390 |
+
+- RNN은 성능과 학습 효율 모두 가장 낮은 결과를 보였다. 다른 모델들은 3~5 epoch에서 최적 성능에 도달한 반면, RNN은 10 epoch까지도 충분히 수렴하지 않았으며 Test Accuracy 역시 크게 낮았다.
+- 단방향 모델과 양방향 모델 간의 성능 차이는 매우 작았다. BiLSTM과 BiGRU가 일부 지표에서는 소폭 낮은 성능을 보였지만, 전체적으로는 오차 범위 내의 차이로 판단되어 양방향 구조가 성능 향상에 유의미한 영향을 주었다고 보기 어려웠다.
+- Confusion Matrix의 결과도 RNN을 제외하면 큰 차이를 보이지 않았다. 다만 BiLSTM은 Negative를 Positive로 오분류하는 비율(N/P)이 다소 증가한 반면, Positive를 Negative로 오분류하는 비율(P/N)은 가장 낮았다. 즉 Positive 클래스에 다소 치우친 예측 경향을 보였으나, 전체 성능에는 큰 차이를 만들지 않았다.
+- 전체적인 성능이 거의 동일하다면 구조가 비교적 단순하고 계산량이 적은 GRU를 사용하는 것이 효율적이라고 판단하였다. 따라서 실험 3(Dropout 효과)에서는 GRU를 기준 모델로 사용하였다.
