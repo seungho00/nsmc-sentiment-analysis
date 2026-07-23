@@ -16,7 +16,9 @@ from config import (
     LEARNING_RATE,
     BATCH_SIZE,
     EPOCHS,
-    EXPERIMENT_NAME
+    EXPERIMENT_NAME,
+    BASE_DIR,
+    CHECKPOINTS_DIR,
 )
 
 
@@ -111,16 +113,12 @@ criterion = nn.BCEWithLogitsLoss()
 optimizer = Adam(model.parameters(), lr=LEARNING_RATE)
 
 # 체크포인트 저장 위치
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-CHECKPOINT_DIR = BASE_DIR / "checkpoints"
-
-CHECKPOINT_DIR.mkdir(
+CHECKPOINTS_DIR.mkdir(
     parents=True,
     exist_ok=True
 )
 
-model_save_path = CHECKPOINT_DIR / f"best_{MODEL_TYPE}.pt"
+model_save_path = CHECKPOINTS_DIR / f"best_{MODEL_TYPE}.pt"
 
 
 # 학습 과정 저장용 변수

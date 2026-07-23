@@ -5,9 +5,10 @@ from collections import Counter
 from sklearn.model_selection import train_test_split
 import pickle
 
-BASE_DIR = Path(__file__).resolve().parent
-train_file_path = BASE_DIR / '../data/raw/ratings_train.txt'
-test_file_path = BASE_DIR / '../data/raw/ratings_test.txt'
+from config import PREPROCESSED_DIR, RAW_DIR
+
+train_file_path = RAW_DIR / 'ratings_train.txt'
+test_file_path = RAW_DIR / 'ratings_test.txt'
 
 
 # 데이터 불러오기
@@ -231,25 +232,22 @@ print(corpus_pad_train[0], corpus_pad_test[0], end="\n\n")
 
 ## pickle 저장 ##
 
-# 저장 위치
-SAVE_BASE_DIR = BASE_DIR / "../data/preprocessed"
-
 # label 저장
 datasets = [(df_train, "train"), (df_valid, "valid"), (df_test, "test")]
 for data, name in datasets:
-    save_path = SAVE_BASE_DIR / f"label_{name}.pkl"
+    save_path = PREPROCESSED_DIR / f"label_{name}.pkl"
     with open(save_path, "wb") as f:
         pickle.dump(data["label"].to_numpy(), f)
 
 
 # word_to_id, id_to_word 저장
 save_name = "word_to_id.pkl"
-save_path = SAVE_BASE_DIR / save_name
+save_path = PREPROCESSED_DIR / save_name
 with open(save_path, "wb") as f:
     pickle.dump(word_to_id, f)
 
 save_name = "id_to_word.pkl"
-save_path = SAVE_BASE_DIR / save_name
+save_path = PREPROCESSED_DIR / save_name
 with open(save_path, "wb") as f:
     pickle.dump(id_to_word, f)
 
@@ -259,6 +257,6 @@ datasets = [(corpus_pad_train, "train"),
             (corpus_pad_valid, "valid"),
             (corpus_pad_test, "test")]
 for data, name in datasets:
-    save_path = SAVE_BASE_DIR / f"corpus_pad_{name}.pkl"
+    save_path = PREPROCESSED_DIR / f"corpus_pad_{name}.pkl"
     with open(save_path, "wb") as f:
         pickle.dump(data, f)

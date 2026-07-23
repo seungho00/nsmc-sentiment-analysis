@@ -1,3 +1,5 @@
+from pathlib import Path
+
 # ===== Data =====
 VALID_SIZE = 0.1
 RANDOM_STATE = 42
@@ -22,3 +24,10 @@ EPOCHS = 10
 
 # ===== Experiment =====
 EXPERIMENT_NAME = "experiment3"
+
+# ===== Path =====
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = BASE_DIR / "data"
+RAW_DIR = DATA_DIR / "raw"
+PREPROCESSED_DIR = DATA_DIR / "preprocessed"
+CHECKPOINTS_DIR = BASE_DIR / "checkpoints"

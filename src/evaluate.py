@@ -18,6 +18,8 @@ from config import (
     HIDDEN_SIZE,
     BATCH_SIZE,
     EXPERIMENT_NAME,
+    BASE_DIR,
+    CHECKPOINTS_DIR,
 )
 
 
@@ -72,9 +74,7 @@ print(f"Using device: {device}")
 ## 모델 생성 ##
 
 # 체크포인트 로드 위치
-BASE_DIR = Path(__file__).resolve().parent.parent
-LOAD_DIR = BASE_DIR / "checkpoints"
-load_path = LOAD_DIR / f"best_{MODEL_TYPE}.pt"
+load_path = CHECKPOINTS_DIR / f"best_{MODEL_TYPE}.pt"
 SAVE_DIR = BASE_DIR / f"results/{EXPERIMENT_NAME}/{MODEL_TYPE}"
 
 # 모델 타입 선택

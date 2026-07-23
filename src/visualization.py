@@ -2,9 +2,9 @@ from pathlib import Path
 import json
 import matplotlib.pyplot as plt
 
-from config import MODEL_TYPE, EXPERIMENT_NAME
+from config import MODEL_TYPE, EXPERIMENT_NAME, BASE_DIR
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+
 HISTORY_DIR = BASE_DIR / f"results/{EXPERIMENT_NAME}/{MODEL_TYPE.lower()}"
 
 # json 불러오기

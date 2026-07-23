@@ -221,7 +221,7 @@ Confusion Matrix (True/Predicted)
 ### 결과
 
 | Dropout rate | Best Epoch | Best Valid Loss | Test Accuracy | F1-score |
-|-:|-:|-:|-:|-:|-:|-:|
+|-:|-:|-:|-:|-:|
 | 0.0 | 4 | 0.3210 | 0.8577 | 0.8573 |
 | 0.2 | 5 | 0.3296 | 0.8576 | 0.8588 |
 

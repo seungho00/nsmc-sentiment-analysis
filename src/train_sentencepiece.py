@@ -2,12 +2,10 @@ from pathlib import Path
 import sentencepiece as spm
 
 from preprocess import load_raw_data, clean_data, split_train_valid
+from config import RAW_DIR, CHECKPOINTS_DIR
 
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-DATA_PATH = BASE_DIR / "data/raw/ratings_train.txt"
-MODEL_PATH = BASE_DIR / "checkpoints/tokenizer"
+DATA_PATH = RAW_DIR / "ratings_train.txt"
+MODEL_PATH = CHECKPOINTS_DIR / "tokenizer"
 
 
 # 데이터 불러오기

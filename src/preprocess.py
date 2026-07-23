@@ -12,7 +12,10 @@ from config import (
     TOKENIZER,
     MIN_FREQ,
     PAD_ID,
-    UNK_ID
+    UNK_ID,
+    PREPROCESSED_DIR,
+    RAW_DIR,
+    CHECKPOINTS_DIR,
 )
 from tokenizer_modules import (
     basic,
@@ -21,11 +24,8 @@ from tokenizer_modules import (
     morpheme
 )
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-SAVE_DIR = BASE_DIR / "data/preprocessed"
-
-train_file_path = BASE_DIR / 'data/raw/ratings_train.txt'
-test_file_path = BASE_DIR / 'data/raw/ratings_test.txt'
+train_file_path = RAW_DIR/ ' ratings_train.txt'
+test_file_path = RAW_DIR / 'ratings_test.txt'
 
 
 # 데이터 불러오는 함수
@@ -195,7 +195,7 @@ if __name__ == "__main__":
         sp = spm.SentencePieceProcessor()
 
         sp.load(
-            str(BASE_DIR / "checkpoints/tokenizer/sentencepiece.model")
+            str(CHECKPOINTS_DIR / "tokenizer/sentencepiece.model")
         )
 
         corpus_train = make_sp_corpus(sp, df_train)
@@ -227,7 +227,7 @@ if __name__ == "__main__":
     # label 저장
     datasets = [(df_train, "train"), (df_valid, "valid"), (df_test, "test")]
     for data, name in datasets:
-        save_path = SAVE_DIR / f"label_{name}.pkl"
+        save_path = PREPROCESSED_DIR / f"label_{name}.pkl"
         data = data["label"].to_numpy()
 
         with open(save_path, "wb") as f:
@@ -237,12 +237,12 @@ if __name__ == "__main__":
     # word_to_id, id_to_word 저장
     if TOKENIZER != "subword":
         save_name = "word_to_id.pkl"
-        save_path = SAVE_DIR / save_name
+        save_path = PREPROCESSED_DIR / save_name
         with open(save_path, "wb") as f:
             pickle.dump(word_to_id, f)
 
         save_name = "id_to_word.pkl"
-        save_path = SAVE_DIR / save_name
+        save_path = PREPROCESSED_DIR / save_name
         with open(save_path, "wb") as f:
             pickle.dump(id_to_word, f)
 
@@ -252,6 +252,6 @@ if __name__ == "__main__":
                 (corpus_pad_valid, "valid"),
                 (corpus_pad_test, "test")]
     for data, name in datasets:
-        save_path = SAVE_DIR / f"corpus_pad_{name}.pkl"
+        save_path = PREPROCESSED_DIR / f"corpus_pad_{name}.pkl"
         with open(save_path, "wb") as f:
             pickle.dump(data, f)
