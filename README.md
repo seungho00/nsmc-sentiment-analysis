@@ -65,6 +65,8 @@ BCEWithLogitsLoss (Sigmoid, Binary Cross Entropy)
 - 책 『파이썬 딥러닝 머신러닝 입문』의 수치를 초기값으로 사용
 - 이후 테스트를 진행하며 튜닝
 
+---
+
 ### 1. 전처리 비교
 
 비교 대상
