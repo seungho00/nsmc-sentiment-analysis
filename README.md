@@ -98,12 +98,15 @@ BCEWithLogitsLoss (Sigmoid, Binary Cross Entropy)
 1. Dropout 미적용
 2. Dropout = 0.2
 
+---
 
 ### 4. 추가 실험 (BERT)
 
 비교 대상
 - BERT
 - 실험 2에서 가장 성능이 우수했던 모델
+
+---
 
 ### 실험 결과 요약
 (자세한 결과는 [`experiment_log.md`](docs/experiment_log.md) 참고)
@@ -146,6 +149,8 @@ BCEWithLogitsLoss (Sigmoid, Binary Cross Entropy)
 | BiLSTM | 3 | 0.3314 | 0.8535 | 0.8580 |
 | BiGRU | 4 | 0.3257 | 0.8568 | 0.8567 |
 
+<br>
+
 Confusion Matrix (True/Predicted)
 | Model | N/N | N/P | P/N | P/P | 
 |:-|-:|-:|-:|-:|
@@ -164,9 +169,11 @@ Confusion Matrix (True/Predicted)
 | 0.0 | 4 | 0.3210 | 0.8577 | 0.8573 |
 | 0.2 | 5 | 0.3296 | 0.8576 | 0.8588 |
 
+<br>
+
 Confusion Matrix (True/Predicted)
 | Model | N/N | N/P | P/N | P/P | 
-|:-|-:|-:|-:|-:|
+|-:|-:|-:|-:|-:|
 | 0.0 | 21503 | 3323 | 3792 | 21379 |
 | 0.2 | 21221 | 3605 | 3517 | 21654 |
 
