@@ -240,3 +240,22 @@ Confusion Matrix (True/Predicted)
 - Train/Validation Loss 그래프를 비교했을 때 Dropout 0.0과 0.2 모델은 유사한 학습 패턴을 보였다. Dropout 0.2를 적용한 모델에서 과적합 발생 시점이 1 epoch 늦춰지는 경향은 있었지만, Validation Loss의 감소 폭과 이후 증가 양상이 크게 다르지 않았다. 따라서 checkpointing을 사용하지 않고 마지막 epoch의 모델을 사용하더라도 Dropout으로 인한 성능 차이는 크지 않았을 것으로 예상된다.
 
 - Dropout이 큰 효과를 발휘하지 못한 또 다른 이유로는, 본 실험의 GRU 모델은 약 70만 개의 학습 가능한 파라미터를 가지는 비교적 단순한 구조로 구성되어 있어 대규모 모델에 비하면 Dropout을 통한 규제 효과가 제한적이었을 가능성이 있다. 일반적으로 모델의 파라미터 수가 크고 과적합 위험이 높은 경우 Dropout의 효과가 크게 나타날 수 있지만, 본 실험의 GRU 모델에서는 추가적인 규제가 성능 향상으로 이어지지 않은 것으로 판단된다.
+
+
+## 추가 실험. Bert 모델과의 비교
+
+### max_length 탐색
+
+| | |
+|:-|-:|
+| mean length | 22.28 |
+| mode length | 11 |
+| 50% coverage | 17 |
+| 90% coverage| 44 |
+| 95% coverage| 62 |
+| max length | 142 |
+
+선정된 max_length: 128
+
+- 일반적인 BERT fine-tuning에서 자주 사용되는 max_length=128 설정을 적용한다.
+- BERT tokenizer 기준 95% coverage 길이는 62이며, 최대 길이는 142로 확인되었다. 따라서 max_length=128은 대부분의 NSMC 데이터를 포함하면서 불필요한 padding을 줄일 수 있는 값으로 판단하였다.
