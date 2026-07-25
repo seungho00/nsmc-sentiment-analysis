@@ -176,6 +176,6 @@ if __name__ == '__main__':
         corpus_save_path = PREPROCESSED_DIR / f'{name}_encodings.pt'
         torch.save(corpus, corpus_save_path)
 
-        label_save_path = PREPROCESSED_DIR / f'{name}_label.pt'
+        label_save_path = PREPROCESSED_DIR / f'{name}_labels.pt'
         torch.save(torch.tensor(label.to_numpy(), dtype=torch.long), label_save_path)
     print("\n저장 완료")

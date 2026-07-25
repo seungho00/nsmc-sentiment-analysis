@@ -15,12 +15,12 @@ def data_load():
         load_path = PREPROCESSED_DIR / f"{name}_encodings.pt"
         encodings = torch.load(load_path)
         
-        load_path = PREPROCESSED_DIR / f"{name}_label.pt"
+        load_path = PREPROCESSED_DIR / f"{name}_labels.pt"
         label = torch.load(load_path)
         
         loaded[name] = {
             "encodings": encodings,
-            "label": label
+            "labels": label
         }
 
     return loaded
@@ -34,7 +34,7 @@ def get_loader():
     for name in ["train", "valid", "test"]:
         ds = dataset.BertDataset(
             data[name]["encodings"],
-            data[name]["label"],
+            data[name]["labels"],
         )
 
         loaders[name] = DataLoader(
