@@ -255,7 +255,7 @@ Confusion Matrix (True/Predicted)
 | 95% coverage| 62 |
 | max length | 142 |
 
-선정된 max_length: 128
+선정된 max_length: **62**
 
-- 일반적인 BERT fine-tuning에서 자주 사용되는 max_length=128 설정을 적용한다.
-- BERT tokenizer 기준 95% coverage 길이는 62이며, 최대 길이는 142로 확인되었다. 따라서 max_length=128은 대부분의 NSMC 데이터를 포함하면서 불필요한 padding을 줄일 수 있는 값으로 판단하였다.
+- BERT는 self-attention을 통해 LSTM보다 긴 문장의 정보를 효과적으로 활용할 수 있다. 따라서 LSTM보다 긴 입력 길이를 사용하는 것이 적절하다고 판단하여 문장 길이 분포를 분석하였다.
+- 문장 정보 보존과 계산 효율의 균형을 고려하여 95% coverage를 기준으로 max_length를 선정하였다. 이에 따라 max_length=62를 사용하였다.

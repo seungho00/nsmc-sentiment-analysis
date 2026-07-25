@@ -9,6 +9,7 @@ from config import (
     RANDOM_STATE,
     TOKENIZER,
     RAW_DIR,
+    PREPROCESSED_DIR,
 )
 
 
@@ -64,50 +65,117 @@ def clean_data(df, name):
 
 ## validation set 분리 함수 ##
 
-def split_train_valid(train, column="label"):
+def split_train_valid(train, valid_size=VALID_SIZE, random_state=RANDOM_STATE, stratify_column="label"):
     train, valid = train_test_split(
         train,
-        test_size=VALID_SIZE,
-        random_state=RANDOM_STATE,
-        stratify=train[column]
+        test_size=valid_size,
+        random_state=random_state,
+        stratify=train[stratify_column]
     )
 
     return train, valid
 
 
 
-## 토큰화 함수 ##
+## max_length 탐색 함수 ##
 
-def tokenize_data(df):
-    tokenizer = AutoTokenizer.from_pretrained(TOKENIZER)
+def get_maxlength(input_ids, ratio):
+    lengths = [len(ids) for ids in input_ids]
+    
+    length_counts = pd.Series(Counter(lengths)).sort_index()
 
-    tokenized_df = tokenizer(df.tolist())
+    coverage = length_counts.cumsum() / len(lengths)
 
-    return tokenized_df
+    return coverage[coverage >= ratio].index[0]
+
+
+
+## 패딩 후 데이터셋 반환 ##
+
+def get_padded_dataset(tokenized_data, max_length, pad_token_id):
+    n = len(tokenized_data["input_ids"])
+
+    input_ids = torch.full(
+        (n, max_length),
+        fill_value=pad_token_id,
+        dtype=torch.long
+    )
+    attention_mask = torch.zeros((n, max_length), dtype=torch.long)
+    token_type_ids = torch.zeros((n, max_length), dtype=torch.long)
+
+
+    for idx, ids in enumerate(tokenized_data["input_ids"]):
+        ids = torch.tensor(ids, dtype=torch.long)
+        length = min(max_length, len(ids))
+
+        input_ids[idx, :length-1] = ids[:length-1]
+        input_ids[idx, length-1] = ids[-1]                   # [SEP] 토큰 유지
+
+        attention_mask[idx, :length] = 1
+
+    return {
+        "input_ids": input_ids,
+        "attention_mask": attention_mask,
+        "token_type_ids": token_type_ids,
+    }
 
 
 
 ## 전처리 실행 ##
 
 if __name__ == '__main__':
+
+    # 데이터 로드 및 정제
     train_df, test_df = load_raw_data()
     train_df = clean_data(train_df, "train")
     test_df = clean_data(test_df, "test")
 
+
+    # 검증 데이터 분리
     train_df, valid_df = split_train_valid(train_df)
 
-    train_tokenized = tokenize_data(train_df["document"])
+
+    # 토큰화
+    tokenizer = AutoTokenizer.from_pretrained(TOKENIZER)
+
+    train_tokenized = tokenizer(train_df["document"].tolist())
+    valid_tokenized = tokenizer(valid_df["document"].tolist())
+    test_tokenized = tokenizer(test_df["document"].tolist())
 
 
-    lengths = [len(ids) for ids in train_tokenized["input_ids"]]
+    # max_length 찾기
+    max_length = get_maxlength(train_tokenized["input_ids"], 0.95)
 
-    length_counts = pd.Series(Counter(lengths)).sort_index()
 
-    coverage = length_counts.cumsum() / len(lengths)
+    # 데이터셋 만들기
+    train_tokenized = get_padded_dataset(
+        train_tokenized,
+        max_length,
+        tokenizer.pad_token_id
+    )
 
-    print("mean length:", sum(lengths) / len(lengths))
-    print("mode length:", length_counts.idxmax())
-    print("50% coverage:", coverage[coverage >= 0.5].index[0])
-    print("90% coverage:", coverage[coverage >= 0.9].index[0])
-    print("95% coverage:", coverage[coverage >= 0.95].index[0])
-    print("max length:", length_counts.index[-1])
+    valid_tokenized = get_padded_dataset(
+        valid_tokenized,
+        max_length,
+        tokenizer.pad_token_id
+    )
+
+    test_tokenized = get_padded_dataset(
+        test_tokenized,
+        max_length,
+        tokenizer.pad_token_id
+    )
+
+    # 저장
+    data_group = [
+        ('train', train_tokenized, train_df['label']),
+        ('valid', valid_tokenized, valid_df['label']),
+        ('test', test_tokenized, test_df['label'])
+    ]
+    for name, corpus, label in data_group:
+        corpus_save_path = PREPROCESSED_DIR / f'{name}_tokenized.pt'
+        torch.save(corpus, corpus_save_path)
+
+        label_save_path = PREPROCESSED_DIR / f'{name}_label.pt'
+        torch.save(torch.tensor(label.to_numpy(), dtype=torch.long), label_save_path)
+    print("\n 저장 완료")
