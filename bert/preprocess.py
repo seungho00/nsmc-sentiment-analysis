@@ -8,7 +8,7 @@ from config import (
     VALID_SIZE,
     RANDOM_STATE,
     TOKENIZER,
-    RAW_DIR,
+    RAW_DATA_DIR,
     PREPROCESSED_DIR,
 )
 
@@ -16,8 +16,8 @@ from config import (
 
 ## 데이터를 불러오는 함수 ##
 
-train_file_path = RAW_DIR / "ratings_train.txt"
-test_file_path = RAW_DIR / "ratings_test.txt"
+train_file_path = RAW_DATA_DIR / "ratings_train.txt"
+test_file_path = RAW_DATA_DIR / "ratings_test.txt"
 
 def load_raw_data():
     try:
@@ -148,19 +148,19 @@ if __name__ == '__main__':
 
 
     # 데이터셋 만들기
-    train_tokenized = get_padded_dataset(
+    train_encodings = get_padded_dataset(
         train_tokenized,
         max_length,
         tokenizer.pad_token_id
     )
 
-    valid_tokenized = get_padded_dataset(
+    valid_encodings = get_padded_dataset(
         valid_tokenized,
         max_length,
         tokenizer.pad_token_id
     )
 
-    test_tokenized = get_padded_dataset(
+    test_encodings = get_padded_dataset(
         test_tokenized,
         max_length,
         tokenizer.pad_token_id
@@ -168,14 +168,14 @@ if __name__ == '__main__':
 
     # 저장
     data_group = [
-        ('train', train_tokenized, train_df['label']),
-        ('valid', valid_tokenized, valid_df['label']),
-        ('test', test_tokenized, test_df['label'])
+        ('train', train_encodings, train_df['label']),
+        ('valid', valid_encodings, valid_df['label']),
+        ('test', test_encodings, test_df['label'])
     ]
     for name, corpus, label in data_group:
-        corpus_save_path = PREPROCESSED_DIR / f'{name}_tokenized.pt'
+        corpus_save_path = PREPROCESSED_DIR / f'{name}_encodings.pt'
         torch.save(corpus, corpus_save_path)
 
         label_save_path = PREPROCESSED_DIR / f'{name}_label.pt'
         torch.save(torch.tensor(label.to_numpy(), dtype=torch.long), label_save_path)
-    print("\n 저장 완료")
+    print("\n저장 완료")
