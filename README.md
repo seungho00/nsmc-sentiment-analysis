@@ -6,7 +6,7 @@ Sequence 모델(RNN, LSTM, GRU, BiLSTM, BiGRU)과 다양한 한국어 전처리 
 - 목적
   - 책으로 학습한 딥러닝 이론을 직접 구현하며 PyTorch 사용법과 프로젝트 개발 경험을 쌓기 위함
   - 한국어 텍스트 감성 분석 모델 구현
-  - 공부하면서 생긴 호기심을 해결하기 위한 실험 진행
+  - 공부하면서 생긴 궁금증을 해결하기 위한 실험 진행
 
 - Dataset
   - Naver Sentiment Movie Corpus (NSMC)
@@ -18,12 +18,16 @@ Sequence 모델(RNN, LSTM, GRU, BiLSTM, BiGRU)과 다양한 한국어 전처리 
 
 ## 2. 개발 환경
 
-- OS: MacOS
-- 라이브러리는 `requirements.txt` 참고
+- **OS**: macOS
+- **학습 환경**
+  - RNN, LSTM, GRU, BiLSTM, BiGRU: macOS
+  - BERT: Google Colab (NVIDIA T4 GPU)
+- **의존성 패키지**: `requirements.txt` 참고
 
 ## 3. 프로젝트 구조
 ```
 nsmc-sentiment-analysis
+├── bert                                        # BERT 모델 학습, 평가 코드 및 결과 데이터
 ├── data                                        # 데이터셋
 ├── docs                                        # 실험 설계, 일지, 보고서
 ├── results                                     # 실험 결과 데이터
@@ -178,13 +182,34 @@ Confusion Matrix (True/Predicted)
 | 0.2 | 21221 | 3605 | 3517 | 21654 |
 
 #### 실험 4
-(BERT 구현 후 추가 예정)
+- Model: klue/bert-base
+- Max length: 62
+- Batch size: 32
+- Epochs: 5
+- Hidden Dropout: 0.1 (default)
+- Attention Dropout: 0.1 (default)
+- Learning rate: 2e-5
+- Optimizer: AdamW
+- Best validation loss 기준 모델 저장 (Model Checkpointing)
+
+| Model | Best Epoch | Best Valid Loss | Test Accuracy | F1-score |
+|:-|-:|-:|-:|-:|
+| BERT | 2 | 0.2501 | 0.9026 | 0.9045 |
+| GRU (dropout=0.2) | 5 | 0.3296 | 0.8576 | 0.8588 |
+
+<br>
+
+Confusion Matrix (True/Predicted)
+| Model | N/N | N/P | P/N | P/P | 
+|:-|-:|-:|-:|-:|
+| BERT | 22078 | 2748 | 2120 | 23051 |
+| GRU (dropout=0.2) | 21221 | 3605 | 3517 | 21654 |
 
 
 ## 사용 방법
-1. `preprocess.py` 실행
-2. `config.py`에서 실험 설정
+1. `config.py`에서 실험 설정
+2. `preprocess.py` 실행
 3. `train.py` 실행
 4. `visualization.py` 실행 (선택)
 5. `evaluate.py` 실행
-6. 6. 결과 `results/`에 자동 저장
+6. 실행 결과 `results/`에 자동 저장
