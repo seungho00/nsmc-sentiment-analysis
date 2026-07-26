@@ -259,3 +259,40 @@ Confusion Matrix (True/Predicted)
 
 - BERT는 self-attention을 통해 LSTM보다 긴 문장의 정보를 효과적으로 활용할 수 있다. 따라서 LSTM보다 긴 입력 길이를 사용하는 것이 적절하다고 판단하여 문장 길이 분포를 분석하였다.
 - 문장 정보 보존과 계산 효율의 균형을 고려하여 95% coverage를 기준으로 max_length를 선정하였다. 이에 따라 max_length=62를 사용하였다.
+
+
+### 학습 조건
+
+- Model: klue/bert-base
+- Max length: 62
+- Batch size: 32
+- Epochs: 5
+- Hidden Dropout: 0.1 (default)
+- Attention Dropout: 0.1 (default)
+- Learning rate: 2e-5
+- Optimizer: AdamW
+- Best validation loss 기준 모델 저장 (Model Checkpointing)
+
+
+### 결과
+
+| Model | Best Epoch | Best Valid Loss | Test Accuracy | F1-score |
+|:-|-:|-:|-:|-:|
+| BERT | 2 | 0.2501 | 0.9026 | 0.9045 |
+| GRU (dropout=0.2) | 5 | 0.3296 | 0.8576 | 0.8588 |
+
+<br>
+
+Confusion Matrix (True/Predicted)
+| Model | N/N | N/P | P/N | P/P | 
+|:-|-:|-:|-:|-:|
+| BERT | 22078 | 2748 | 2120 | 23051 |
+| GRU (dropout=0.2) | 21221 | 3605 | 3517 | 21654 |
+
+
+- 이전 실험에서 F1-score가 가장 높았던 GRU (dropout=0.2)와 비교해 보았다.
+- BERT는 Test Accuracy 90.26%, F1-score 90.45%를 기록하여 이전 실험에서 보지 못한 가장 높은 성능을 보였다.
+- BERT가 성능이 좋긴 하지만 비용 대비 성능은 GRU가 경쟁력이 있다. BERT는 대규모 말뭉치로 사전학습(pre-training)된 모델이며, GRU보다 훨씬 많은 파라미터를 사용한다.
+- 두 모델은 서로 다른 하드웨어에서 학습되었으므로 학습 시간을 직접 비교하기에는 한계가 있지만, 그럼에도 BERT가 GRU보다 훨씬 높은 계산 비용을 요구한다는 점은 확인할 수 있었다.
+- 이런 비용 차이에도 불구하고 Test accuracy는 4.5%p, F1-score는 4.57%p의 차이밖에 보이지 못했다.
+- 따라서 최고 성능만을 고려한다면 BERT가 가장 우수한 선택이다. 반면 계산 비용과 학습 시간을 함께 고려하면, GRU는 훨씬 적은 자원으로 학습이 가능함에도 약 4.5%p 낮은 정확도를 보여 비용 대비 성능 측면에서는 경쟁력 있는 선택이라고 볼 수 있다.

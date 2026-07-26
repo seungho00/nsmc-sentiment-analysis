@@ -180,3 +180,17 @@ Test Accuracy: 0.7341
 
 - 실험 결과를 python으로 출력하지 않아도 쉽게 접근할 수 있도록 json 형식으로 변환했다.
 - Dropout이 기대했던 만큼 큰 효과를 보여주지는 못했다. 처음에는 약 70만개의 파라미터를 가진 모델도 충분히 큰 모델이라고 생각했지만, 실험을 진행하면서 실제 딥러닝 모델 관점에서는 작은 규모라는 것을 알게 되었다. 이를 통해 실제 상용 AI 모델들이 얼마나 거대한 규모로 설계되는지 체감하게 되었다.
+
+## 2026-07-26
+(실험 4 종료)
+
+- 잊지 말자. "NumPy는 CPU에서만 연산이 가능하다. 따라서 GPU에서 계산한 Tensor는 `.cpu()`로 CPU 메모리로 옮긴 후 사용해야 한다."
+```
+model = BertForSequenceClassification.from_pretrained(
+    "klue/bert-base",
+    num_labels=2
+)
+```
+- 위 코드를 실행하면 classifier.bias와 classifier.weight가 MISSING이라는 오류 경고 메시지가 출력되는데 문제 없다.
+- classifier 레이어가 원본 BERT에는 없기 때문에, 무작위 초깃값(Random Initialization)으로 새롭게 생성된 상태라는 의미다.
+- evaluate.py에서도 이런 문구가 뜨는데 가중치를 불러오고 에러 출력이 없다면 정상 작동하는 것이다.
