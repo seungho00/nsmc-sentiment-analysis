@@ -10,6 +10,7 @@ Sequence 모델(RNN, LSTM, GRU, BiLSTM, BiGRU)과 다양한 한국어 전처리 
 
 - Dataset
   - Naver Sentiment Movie Corpus (NSMC)
+  - 프로젝트 실행을 위해 raw data는 직접 다운로드 후, data/raw에 위치시켜야 한다.
 
 - 참고 자료
   - 『밑바닥부터 시작하는 딥러닝』
