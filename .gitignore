@@ -1,3 +1,7 @@
+# raw data
+data/raw/ratings_test.txt
+data/raw/ratings_train.txt
+
 # bert/preprocessed
 bert/preprocessed
 
